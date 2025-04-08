@@ -19,7 +19,7 @@ mongoose.connect(process.env.MONGO_URI).then(function () {
 });
 
 // Routes 
-var formRoute = require("./routes/formRoute");
+var formRoute = require("./src/routes/formRoute");
 app.use("/api/form", formRoute);
 
 // Server
