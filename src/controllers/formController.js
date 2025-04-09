@@ -3,13 +3,16 @@ const Student = require("../module/sutdent"); // Corrected the typo
 
 exports.submitForm = async (req, res) => {
   try {
-    const formData = req.body;
-    const form = new Form(formData);
-    await form.save();
+    const formData = req.body; // Get the data from the request body
+    console.log("Received form data:", formData); // Log the incoming data
+
+    const newForm = new Form(formData); // Create a new instance of the Form model
+    await newForm.save(); // Save to the database
+
     res.status(201).json({ success: true, message: "Form submitted successfully" });
   } catch (error) {
-    console.error("Form submission error:", error.message);
-    res.status(500).json({ success: false, message: "Submission failed" });
+    console.error("Error saving form:", error.message);
+    res.status(500).json({ success: false, message: "Failed to save form" });
   }
 };
 
@@ -26,6 +29,30 @@ exports.getFormById = async (req, res) => {
   } catch (error) {
     console.error("Error fetching form:", error.message);
     res.status(500).json({ success: false, message: "Failed to fetch form" });
+  }
+};
+exports.getAllForm = async (req, res) => {
+  try {
+    const  form = await Form.find();
+    res.status(200).json({ success: true, data:  form });
+  } catch (error) {
+    console.error("Error fetching students:", error.message);
+    res.status(500).json({ success: false, message: "Failed to fetch students" });
+  }
+};
+exports.deleteForm = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const form = await Form.findByIdAndDelete(id);
+
+    if (!form) {
+      return res.status(404).json({ success: false, message: "Form not found" });
+    }
+
+    res.status(200).json({ success: true, message: "Form deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting form:", error.message);
+    res.status(500).json({ success: false, message: "Failed to delete form" });
   }
 };
 
@@ -72,5 +99,20 @@ exports.getAllStudents = async (req, res) => {
   } catch (error) {
     console.error("Error fetching students:", error.message);
     res.status(500).json({ success: false, message: "Failed to fetch students" });
+  }
+};
+exports.deleteStudent = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const student = await Student.findByIdAndDelete(id);
+
+    if (!student) {
+      return res.status(404).json({ success: false, message: "Student not found" });
+    }
+
+    res.status(200).json({ success: true, message: "Student deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting student:", error.message);
+    res.status(500).json({ success: false, message: "Failed to delete student" });
   }
 };
