@@ -1,6 +1,8 @@
 const Form = require("../module/formModel");
 const Student = require("../module/sutdent"); // Corrected the typo
-
+// const { sendEmail } = require('../mailer'); 
+const { sendInquiryEmail } = require('../mailer'); // Adjust the path as necessary
+// Adjust the path as necessary
 exports.submitForm = async (req, res) => {
   try {
     const formData = req.body; // Get the data from the request body
@@ -62,17 +64,43 @@ exports.submitStudent = async (req, res) => {
     console.log("Received student data:", studentData);
 
     // Validate required fields
-    if (!studentData.studentName) {
-      return res.status(400).json({ success: false, message: "Student name is required" });
+    if (!studentData.studentName || !studentData.fatherName || !studentData.fatherMobile) {
+      return res.status(400).json({ success: false, message: "All fields are required" });
     }
 
-    const student = new Student(studentData);
-    await student.save();
-    console.log("Student saved successfully:", student);
-    res.status(201).json({ success: true, message: "Student submitted successfully", data: student });
+    // Create a new student instance
+    const newStudent = new Student(studentData);
+    await newStudent.save(); // Save to the database
+
+    // Send inquiry emails if provided
+    if (studentData.fatherEmail) {
+      await sendInquiryEmail(studentData.fatherEmail, studentData);
+    }
+    if (studentData.motherEmail) {
+      await sendInquiryEmail(studentData.motherEmail, studentData);
+    }
+
+    res.status(201).json({ success: true, message: "Student submitted successfully", data: newStudent });
   } catch (error) {
     console.error("Student submission error:", error.message);
     res.status(500).json({ success: false, message: "Submission failed", error: error.message });
+  }
+};
+exports.getCounts = async (req, res) => {
+  try {
+    const studentCount = await Student.countDocuments();
+    const formCount = await Form.countDocuments();
+    
+    res.status(200).json({
+      success: true,
+      data: {
+        students: studentCount,
+        forms: formCount
+      }
+    });
+  } catch (error) {
+    console.error("Error getting counts:", error.message);
+    res.status(500).json({ success: false, message: "Failed to get counts" });
   }
 };
 

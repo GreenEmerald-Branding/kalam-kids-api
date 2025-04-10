@@ -1,27 +1,10 @@
-const nodemailer = require("nodemailer");
-const fs = require("fs");
-const path = require("path");
+const nodemailer = require('nodemailer');
+const fs = require('fs');
+const path = require('path');
 
-// ✅ Corrected Path to HTML Template
-const emailTemplatePath = path.join(__dirname, "Templetes/emailTemplete.html"); 
+// Load environment variables
+require('dotenv').config();
 
-
-// ✅ Read HTML File and Replace Variables
-const generateEmailContent = (data) => {
-  try {
-    let template = fs.readFileSync(emailTemplatePath, "utf-8");
-    template = template.replace("{{name}}", data.name);
-    template = template.replace("{{orderId}}", data.invoiceNo);
-    template = template.replace("{{businessName}}", data.businessName);
-    template = template.replace("{{totalCost}}", data.discountedPrice);
-    return template;
-  } catch (error) {
-    console.error("❌ Error reading email template:", error);
-    return "Error loading email template"; // Fallback content
-  }
-};
-
-// ✅ Configure Email Transporter
 const transporter = nodemailer.createTransport({
   service: "gmail",
   host: "smtp.gmail.com",
@@ -33,44 +16,59 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-// ✅ Function to Send Email
-const sendEmail = async (toEmail, data) => {
+const sendInquiryEmail = async (to, studentData) => {
   try {
-    const emailContent = generateEmailContent(data);
+    // Read the HTML template
+    const templatePath = path.join(__dirname, "Templetes/inquiryNotification.html");
+    let template = fs.readFileSync(templatePath, 'utf8');
 
-    // ✅ Send confirmation to the user
-    const userMailOptions = {
-      from: process.env.EMAIL_USER,
-      to: toEmail,
-      subject: "Your Order Confirmation - Green Emerald Agency",
-      html: emailContent,
+    // Replace placeholders with actual data
+    template = template
+      .replace('{{studentName}}', studentData.studentName)
+      .replace('{{fatherName}}', studentData.fatherName)
+      .replace('{{fatherMobile}}', studentData.fatherMobile);
+
+    // Mail options for the parent
+    const mailOptionsToParent = {
+      from: process.env.EMAIL_USER, // Use the environment variable for the sender's email
+      to: to, // Father's email
+      subject: 'New Student Enquiry Notification',
+      html: template,
     };
 
-    await transporter.sendMail(userMailOptions);
-    console.log("📧 Email sent to user:", toEmail);
+    // Send email to the parent
+    await transporter.sendMail(mailOptionsToParent);
+    console.log(`📧 Enquiry email sent to: ${to}`);
 
-    // ✅ Send notification to yourself
-    const adminMailOptions = {
+    // Mail options for yourself (admin)
+    const mailOptionsToAdmin = {
       from: process.env.EMAIL_USER,
-      to: "greenemeraldagency@gmail.com", // Replace with your email
-      subject: "📩 New Message Received",
+      to: process.env.EMAIL_USER,
+      subject: '📩 New Inquiry Received',
       html: `
-        <p>You got a new message from: <strong>${toEmail}</strong></p>
-        <p><strong>Name:</strong> ${data.name}</p>
-        <p><strong>Order ID:</strong> ${data.invoiceNo}</p>
-        <p><strong>Business Name:</strong> ${data.businessName}</p>
-         <p><strong>Check Order Details:</strong> <a href="https://package.greenemeraldbranding.com/admin" target="_blank">Click here</a></p>
+        <h1>New Enquiry from ${studentData.studentName}</h1>
+        <p>You have received a new inquiry:</p>
+        <ul>
+          <li><strong>Student Name:</strong> ${studentData.studentName}</li>
+          <li><strong>Father's Name:</strong> ${studentData.fatherName}</li>
+          <li><strong>Mobile Number:</strong> ${studentData.fatherMobile}</li>
+        </ul>
+        <p>
+          <a href="https://kalamkids.in/login" target="_blank" style="display:inline-block;margin-top:10px;padding:8px 15px;background-color:#114497;color:#fff;text-decoration:none;border-radius:5px;">
+            Click Here to Login
+          </a>
+        </p>
       `,
     };
     
 
-    await transporter.sendMail(adminMailOptions);
-    console.log("📧 Admin notification sent!");
+    // Send email to yourself (admin)
+    await transporter.sendMail(mailOptionsToAdmin);
+    console.log(`📧 Inquiry notification sent to admin: ${process.env.EMAIL_USER}`);
 
   } catch (error) {
-    console.error("❌ Error sending email:", error);
+    console.error("❌ Error sending inquiry email:", error);
   }
 };
 
-
-module.exports = sendEmail;
+module.exports = { sendInquiryEmail };
