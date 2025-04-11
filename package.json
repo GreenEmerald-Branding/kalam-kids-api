@@ -5,8 +5,7 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node dist/server.js",
-    "dev": "nodemon --exec ./node_modules/.bin/babel-node server.js",
+    "start": "nodemon --exec ./node_modules/.bin/babel-node server.js",
     "build": "babel server.js -d dist && babel src --out-dir dist"
   },
   "keywords": [],
@@ -34,8 +33,5 @@
     "@babel/preset-env": "^7.26.9",
     "eslint": "^9.24.0",
     "nodemon": "^3.1.9"
-  },
-  "engines": {
-    "node": "14.x"
   }
 }
