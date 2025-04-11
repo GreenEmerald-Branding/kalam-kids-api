@@ -5,7 +5,7 @@ var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"))
 var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
 // src/controllers/authController.js
 var User = require('../module/user');
-var bcrypt = require('bcryptjs');
+var bcrypt = require('bcrypt');
 var jwt = require('jsonwebtoken');
 exports.register = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])(/*#__PURE__*/_regenerator["default"].mark(function _callee(req, res) {
