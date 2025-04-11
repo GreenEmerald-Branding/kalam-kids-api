@@ -1,25 +1,30 @@
 "use strict";
 
 var mongoose = require("mongoose");
-var student = new mongoose.Schema({
+var studentSchema = new mongoose.Schema({
   studentName: {
-    type: String
+    type: String,
+    required: true
   },
   gender: {
-    type: String
+    type: String,
+    "default": 'Not Specified'
   },
   dob: {
     type: Date
   },
   // Use Date type for date of birth
   fatherName: {
-    type: String
+    type: String,
+    required: true
   },
   fatherMobile: {
-    type: String
+    type: String,
+    required: true
   },
   fatherEmail: {
-    type: String
+    type: String,
+    index: true
   },
   motherName: {
     type: String
@@ -28,7 +33,8 @@ var student = new mongoose.Schema({
     type: String
   },
   motherEmail: {
-    type: String
+    type: String,
+    index: true
   },
   area: {
     type: String
@@ -53,7 +59,9 @@ var student = new mongoose.Schema({
   // Optional field
   landmark: {
     type: String
-  } // Optional field
+  }
+}, {
+  timestamps: true
 }); // Automatically manage createdAt and updatedAt fields
 
-module.exports = mongoose.model("Student", student);
+module.exports = mongoose.model("Student", studentSchema);

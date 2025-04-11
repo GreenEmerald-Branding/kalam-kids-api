@@ -5,11 +5,10 @@ var mongoose = require("mongoose");
 var cors = require("cors");
 var dotenv = require("dotenv");
 dotenv.config();
+var bodyParser = require('body-parser');
 var app = express();
 app.use(cors());
-app.use(express.json({
-  limit: "10mb"
-})); // Support base64 images
+app.use(bodyParser.json()); // Support base64 images
 
 // MongoDB connection
 mongoose.connect(process.env.MONGO_URI).then(function () {
@@ -20,8 +19,9 @@ mongoose.connect(process.env.MONGO_URI).then(function () {
 
 // Routes 
 var formRoute = require("./src/routes/formRoute");
+var authRoute = require("./src/routes/authRoute");
 app.use("/api/form", formRoute);
-
+app.use("/api/form", authRoute);
 // Server
 var PORT = process.env.PORT || 5000;
 app.listen(PORT, function () {

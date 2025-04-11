@@ -5,15 +5,25 @@ var router = express.Router();
 var _require = require("../controllers/formController"),
   submitStudent = _require.submitStudent,
   getStudentById = _require.getStudentById,
-  getAllStudents = _require.getAllStudents;
+  getAllStudents = _require.getAllStudents,
+  submitForm = _require.submitForm,
+  getFormById = _require.getFormById,
+  getAllForm = _require.getAllForm,
+  deleteForm = _require.deleteForm,
+  deleteStudent = _require.deleteStudent,
+  getCounts = _require.getCounts;
 
 // Form routes
-// router.post("/submit", submitForm);
-// router.get("/form/:id", getFormById); // Fetch form by ID
-
+router.post("/submit", submitForm);
+router.get("/form/:id", getFormById);
+router.get("/form", getAllForm);
+router["delete"]('/forms/:id', deleteForm); // Fetch all students
+// Fetch form by ID
+router.get('/counts', getCounts);
 // Student routes
 router.post("/enquiry", submitStudent);
-router.get("/students/:id", getStudentById); // Fetch student by ID
-router.get("/students", getAllStudents); // Fetch all students
+router.get("/students/:id", getStudentById);
+router.get("/students", getAllStudents);
+router["delete"]('/enq/:id', deleteStudent); // Fetch all students
 
 module.exports = router;
