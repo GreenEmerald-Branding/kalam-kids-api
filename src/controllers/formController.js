@@ -144,3 +144,48 @@ exports.deleteStudent = async (req, res) => {
     res.status(500).json({ success: false, message: "Failed to delete student" });
   }
 };
+exports.approveForm = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const form = await Form.findByIdAndUpdate(id, { isApproved: true }, { new: true });
+
+    if (!form) {
+      return res.status(404).json({ success: false, message: "Form not found" });
+    }
+
+    res.status(200).json({ success: true, message: "Form approved successfully", data: form });
+  } catch (error) {
+    console.error("Error approving form:", error.message);
+    res.status(500).json({ success: false, message: "Failed to approve form" });
+  }
+};
+
+exports.getFormById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const form = await Form.findById(id);
+
+    if (!form) {
+      return res.status(404).json({ success: false, message: "Form not found" });
+    }
+
+    res.status(200).json({ success: true, data: form });
+  } catch (error) {
+    console.error("Error fetching form:", error.message);
+    res.status(500).json({ success: false, message: "Failed to fetch form" });
+  }
+};
+exports.getApprovedForms = async (req, res) => {
+  try {
+    const approvedForms = await Form.find({ isApproved: true });
+
+    if (approvedForms.length === 0) {
+      return res.status(404).json({ success: false, message: "No approved forms found" });
+    }
+
+    res.status(200).json({ success: true, data: approvedForms });
+  } catch (error) {
+    console.error("Error fetching approved forms:", error.message);
+    res.status(500).json({ success: false, message: "Failed to fetch approved forms" });
+  }
+};

@@ -95,6 +95,8 @@ const formSchema = new mongoose.Schema({
     specialEventsCost: { type:String,  default: false },
     attendMeetings: { type:String,  default: false },
   },
+  isApproved: { type: Boolean, default: false }, // New field for approval status
+ 
 }, { timestamps: true });
 
 module.exports = mongoose.model("Form", formSchema);
