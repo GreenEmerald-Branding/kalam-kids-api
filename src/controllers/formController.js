@@ -147,11 +147,37 @@ exports.deleteStudent = async (req, res) => {
 exports.approveForm = async (req, res) => {
   try {
     const { id } = req.params;
-    const form = await Form.findByIdAndUpdate(id, { isApproved: true }, { new: true });
 
-    if (!form) {
+    // Find the form with the highest invoice number
+    const lastOrder = await Form.find({ invoiceNo: { $regex: /^KSS-\d{6}$/ } })
+      .sort({ invoiceNo: -1 }) // Sort invoiceNo descending
+      .limit(1);
+
+    let lastNumber = 700; // Default starting number
+    if (lastOrder.length > 0) {
+      const numberPart = parseInt(lastOrder[0].invoiceNo.split("-")[1]);
+      if (!isNaN(numberPart)) {
+        lastNumber = numberPart;
+      }
+    }
+    
+    const newInvoiceNo = `KSS-${String(lastNumber + 1).padStart(6, "0")}`;
+
+    // Check if the form is already approved to avoid double invoicing
+    const existingForm = await Form.findById(id);
+    if (!existingForm) {
       return res.status(404).json({ success: false, message: "Form not found" });
     }
+    if (existingForm.isApproved && existingForm.invoiceNo) {
+      return res.status(400).json({ success: false, message: "Form already approved" });
+    }
+
+    // Update the form with approval and invoice number
+    const form = await Form.findByIdAndUpdate(
+      id,
+      { isApproved: true, invoiceNo: newInvoiceNo },
+      { new: true }
+    );
 
     res.status(200).json({ success: true, message: "Form approved successfully", data: form });
   } catch (error) {
@@ -159,6 +185,7 @@ exports.approveForm = async (req, res) => {
     res.status(500).json({ success: false, message: "Failed to approve form" });
   }
 };
+
 
 exports.getFormById = async (req, res) => {
   try {

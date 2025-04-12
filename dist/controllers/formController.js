@@ -405,3 +405,177 @@ exports.deleteStudent = /*#__PURE__*/function () {
     return _ref9.apply(this, arguments);
   };
 }();
+exports.approveForm = /*#__PURE__*/function () {
+  var _ref10 = (0, _asyncToGenerator2["default"])(/*#__PURE__*/_regenerator["default"].mark(function _callee10(req, res) {
+    var id, lastOrder, lastNumber, numberPart, newInvoiceNo, existingForm, form;
+    return _regenerator["default"].wrap(function _callee10$(_context10) {
+      while (1) switch (_context10.prev = _context10.next) {
+        case 0:
+          _context10.prev = 0;
+          id = req.params.id; // Find the form with the highest invoice number
+          _context10.next = 4;
+          return Form.find({
+            invoiceNo: {
+              $regex: /^KSS-\d{6}$/
+            }
+          }).sort({
+            invoiceNo: -1
+          }) // Sort invoiceNo descending
+          .limit(1);
+        case 4:
+          lastOrder = _context10.sent;
+          lastNumber = 700; // Default starting number
+          if (lastOrder.length > 0) {
+            numberPart = parseInt(lastOrder[0].invoiceNo.split("-")[1]);
+            if (!isNaN(numberPart)) {
+              lastNumber = numberPart;
+            }
+          }
+          newInvoiceNo = "KSS-".concat(String(lastNumber + 1).padStart(6, "0")); // Check if the form is already approved to avoid double invoicing
+          _context10.next = 10;
+          return Form.findById(id);
+        case 10:
+          existingForm = _context10.sent;
+          if (existingForm) {
+            _context10.next = 13;
+            break;
+          }
+          return _context10.abrupt("return", res.status(404).json({
+            success: false,
+            message: "Form not found"
+          }));
+        case 13:
+          if (!(existingForm.isApproved && existingForm.invoiceNo)) {
+            _context10.next = 15;
+            break;
+          }
+          return _context10.abrupt("return", res.status(400).json({
+            success: false,
+            message: "Form already approved"
+          }));
+        case 15:
+          _context10.next = 17;
+          return Form.findByIdAndUpdate(id, {
+            isApproved: true,
+            invoiceNo: newInvoiceNo
+          }, {
+            "new": true
+          });
+        case 17:
+          form = _context10.sent;
+          res.status(200).json({
+            success: true,
+            message: "Form approved successfully",
+            data: form
+          });
+          _context10.next = 25;
+          break;
+        case 21:
+          _context10.prev = 21;
+          _context10.t0 = _context10["catch"](0);
+          console.error("Error approving form:", _context10.t0.message);
+          res.status(500).json({
+            success: false,
+            message: "Failed to approve form"
+          });
+        case 25:
+        case "end":
+          return _context10.stop();
+      }
+    }, _callee10, null, [[0, 21]]);
+  }));
+  return function (_x19, _x20) {
+    return _ref10.apply(this, arguments);
+  };
+}();
+exports.getFormById = /*#__PURE__*/function () {
+  var _ref11 = (0, _asyncToGenerator2["default"])(/*#__PURE__*/_regenerator["default"].mark(function _callee11(req, res) {
+    var id, form;
+    return _regenerator["default"].wrap(function _callee11$(_context11) {
+      while (1) switch (_context11.prev = _context11.next) {
+        case 0:
+          _context11.prev = 0;
+          id = req.params.id;
+          _context11.next = 4;
+          return Form.findById(id);
+        case 4:
+          form = _context11.sent;
+          if (form) {
+            _context11.next = 7;
+            break;
+          }
+          return _context11.abrupt("return", res.status(404).json({
+            success: false,
+            message: "Form not found"
+          }));
+        case 7:
+          res.status(200).json({
+            success: true,
+            data: form
+          });
+          _context11.next = 14;
+          break;
+        case 10:
+          _context11.prev = 10;
+          _context11.t0 = _context11["catch"](0);
+          console.error("Error fetching form:", _context11.t0.message);
+          res.status(500).json({
+            success: false,
+            message: "Failed to fetch form"
+          });
+        case 14:
+        case "end":
+          return _context11.stop();
+      }
+    }, _callee11, null, [[0, 10]]);
+  }));
+  return function (_x21, _x22) {
+    return _ref11.apply(this, arguments);
+  };
+}();
+exports.getApprovedForms = /*#__PURE__*/function () {
+  var _ref12 = (0, _asyncToGenerator2["default"])(/*#__PURE__*/_regenerator["default"].mark(function _callee12(req, res) {
+    var approvedForms;
+    return _regenerator["default"].wrap(function _callee12$(_context12) {
+      while (1) switch (_context12.prev = _context12.next) {
+        case 0:
+          _context12.prev = 0;
+          _context12.next = 3;
+          return Form.find({
+            isApproved: true
+          });
+        case 3:
+          approvedForms = _context12.sent;
+          if (!(approvedForms.length === 0)) {
+            _context12.next = 6;
+            break;
+          }
+          return _context12.abrupt("return", res.status(404).json({
+            success: false,
+            message: "No approved forms found"
+          }));
+        case 6:
+          res.status(200).json({
+            success: true,
+            data: approvedForms
+          });
+          _context12.next = 13;
+          break;
+        case 9:
+          _context12.prev = 9;
+          _context12.t0 = _context12["catch"](0);
+          console.error("Error fetching approved forms:", _context12.t0.message);
+          res.status(500).json({
+            success: false,
+            message: "Failed to fetch approved forms"
+          });
+        case 13:
+        case "end":
+          return _context12.stop();
+      }
+    }, _callee12, null, [[0, 9]]);
+  }));
+  return function (_x23, _x24) {
+    return _ref12.apply(this, arguments);
+  };
+}();

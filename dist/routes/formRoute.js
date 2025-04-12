@@ -11,12 +11,16 @@ var _require = require("../controllers/formController"),
   getAllForm = _require.getAllForm,
   deleteForm = _require.deleteForm,
   deleteStudent = _require.deleteStudent,
-  getCounts = _require.getCounts;
+  getCounts = _require.getCounts,
+  approveForm = _require.approveForm,
+  getApprovedForms = _require.getApprovedForms;
 
 // Form routes
 router.post("/submit", submitForm);
 router.get("/form/:id", getFormById);
 router.get("/form", getAllForm);
+router.put("/form/approve/:id", approveForm);
+router.get("/approved", getApprovedForms); // Add this line for approval
 router["delete"]('/forms/:id', deleteForm); // Fetch all students
 // Fetch form by ID
 router.get('/counts', getCounts);

@@ -313,6 +313,15 @@ var formSchema = new mongoose.Schema({
       type: String,
       "default": false
     }
+  },
+  isApproved: {
+    type: Boolean,
+    "default": false
+  },
+  // New field for approval status
+  invoiceNo: {
+    type: String,
+    "default": ""
   }
 }, {
   timestamps: true
