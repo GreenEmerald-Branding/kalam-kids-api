@@ -13,7 +13,11 @@ var _require = require("../controllers/formController"),
   deleteStudent = _require.deleteStudent,
   getCounts = _require.getCounts,
   approveForm = _require.approveForm,
-  getApprovedForms = _require.getApprovedForms;
+  getApprovedForms = _require.getApprovedForms,
+  payForm = _require.payForm,
+  getPaymentsForForm = _require.getPaymentsForForm,
+  getAllPayments = _require.getAllPayments,
+  getPaymentHistory = _require.getPaymentHistory;
 
 // Form routes
 router.post("/submit", submitForm);
@@ -26,6 +30,10 @@ router["delete"]('/forms/:id', deleteForm); // Fetch all students
 router.get('/counts', getCounts);
 // Student routes
 router.post("/enquiry", submitStudent);
+router.post('/:id/pay', payForm);
+router.get('/:id/payments', getPaymentHistory);
+router.get('/payments/:id', getPaymentsForForm);
+router.get('/getbill', getAllPayments);
 router.get("/students/:id", getStudentById);
 router.get("/students", getAllStudents);
 router["delete"]('/enq/:id', deleteStudent); // Fetch all students

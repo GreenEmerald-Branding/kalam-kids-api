@@ -2,12 +2,17 @@
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
+var _defineProperty2 = _interopRequireDefault(require("@babel/runtime/helpers/defineProperty"));
 var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
+function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { (0, _defineProperty2["default"])(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
 var Form = require("../module/formModel");
 var Student = require("../module/sutdent"); // Corrected the typo
 // const { sendEmail } = require('../mailer'); 
 var _require = require('../mailer'),
-  sendInquiryEmail = _require.sendInquiryEmail; // Adjust the path as necessary
+  sendInquiryEmail = _require.sendInquiryEmail;
+
+// Adjust the path as necessary
 // Adjust the path as necessary
 exports.submitForm = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])(/*#__PURE__*/_regenerator["default"].mark(function _callee(req, res) {
@@ -407,13 +412,24 @@ exports.deleteStudent = /*#__PURE__*/function () {
 }();
 exports.approveForm = /*#__PURE__*/function () {
   var _ref10 = (0, _asyncToGenerator2["default"])(/*#__PURE__*/_regenerator["default"].mark(function _callee10(req, res) {
-    var id, lastOrder, lastNumber, numberPart, newInvoiceNo, existingForm, form;
+    var id, feeAmount, lastOrder, lastNumber, numberPart, newInvoiceNo, existingForm, form;
     return _regenerator["default"].wrap(function _callee10$(_context10) {
       while (1) switch (_context10.prev = _context10.next) {
         case 0:
           _context10.prev = 0;
-          id = req.params.id; // Find the form with the highest invoice number
-          _context10.next = 4;
+          id = req.params.id;
+          feeAmount = req.body.feeAmount; // Get fee amount from request body
+          // Validate fee amount
+          if (!(!feeAmount || isNaN(feeAmount) || feeAmount <= 0)) {
+            _context10.next = 5;
+            break;
+          }
+          return _context10.abrupt("return", res.status(400).json({
+            success: false,
+            message: "Invalid fee amount"
+          }));
+        case 5:
+          _context10.next = 7;
           return Form.find({
             invoiceNo: {
               $regex: /^KSS-\d{6}$/
@@ -422,7 +438,7 @@ exports.approveForm = /*#__PURE__*/function () {
             invoiceNo: -1
           }) // Sort invoiceNo descending
           .limit(1);
-        case 4:
+        case 7:
           lastOrder = _context10.sent;
           lastNumber = 700; // Default starting number
           if (lastOrder.length > 0) {
@@ -432,57 +448,60 @@ exports.approveForm = /*#__PURE__*/function () {
             }
           }
           newInvoiceNo = "KSS-".concat(String(lastNumber + 1).padStart(6, "0")); // Check if the form is already approved to avoid double invoicing
-          _context10.next = 10;
+          _context10.next = 13;
           return Form.findById(id);
-        case 10:
+        case 13:
           existingForm = _context10.sent;
           if (existingForm) {
-            _context10.next = 13;
+            _context10.next = 16;
             break;
           }
           return _context10.abrupt("return", res.status(404).json({
             success: false,
             message: "Form not found"
           }));
-        case 13:
+        case 16:
           if (!(existingForm.isApproved && existingForm.invoiceNo)) {
-            _context10.next = 15;
+            _context10.next = 18;
             break;
           }
           return _context10.abrupt("return", res.status(400).json({
             success: false,
             message: "Form already approved"
           }));
-        case 15:
-          _context10.next = 17;
+        case 18:
+          _context10.next = 20;
           return Form.findByIdAndUpdate(id, {
             isApproved: true,
-            invoiceNo: newInvoiceNo
-          }, {
+            invoiceNo: newInvoiceNo,
+            feeAmount: feeAmount
+          },
+          // Add feeAmount to update
+          {
             "new": true
           });
-        case 17:
+        case 20:
           form = _context10.sent;
           res.status(200).json({
             success: true,
             message: "Form approved successfully",
             data: form
           });
-          _context10.next = 25;
+          _context10.next = 28;
           break;
-        case 21:
-          _context10.prev = 21;
+        case 24:
+          _context10.prev = 24;
           _context10.t0 = _context10["catch"](0);
           console.error("Error approving form:", _context10.t0.message);
           res.status(500).json({
             success: false,
             message: "Failed to approve form"
           });
-        case 25:
+        case 28:
         case "end":
           return _context10.stop();
       }
-    }, _callee10, null, [[0, 21]]);
+    }, _callee10, null, [[0, 24]]);
   }));
   return function (_x19, _x20) {
     return _ref10.apply(this, arguments);
@@ -577,5 +596,250 @@ exports.getApprovedForms = /*#__PURE__*/function () {
   }));
   return function (_x23, _x24) {
     return _ref12.apply(this, arguments);
+  };
+}();
+var mongoose = require("mongoose");
+exports.payForm = /*#__PURE__*/function () {
+  var _ref13 = (0, _asyncToGenerator2["default"])(/*#__PURE__*/_regenerator["default"].mark(function _callee13(req, res) {
+    var _req$body, amount, paidBy, amountInWords, receivedFrom, relationship, form, lastFormWithPayment, lastNumber, lastPayment, lastId, match, newInvoiceNo, newPayment;
+    return _regenerator["default"].wrap(function _callee13$(_context13) {
+      while (1) switch (_context13.prev = _context13.next) {
+        case 0:
+          _req$body = req.body, amount = _req$body.amount, paidBy = _req$body.paidBy, amountInWords = _req$body.amountInWords, receivedFrom = _req$body.receivedFrom, relationship = _req$body.relationship;
+          _context13.prev = 1;
+          _context13.next = 4;
+          return Form.findById(req.params.id);
+        case 4:
+          form = _context13.sent;
+          if (form) {
+            _context13.next = 7;
+            break;
+          }
+          return _context13.abrupt("return", res.status(404).send("Form not found"));
+        case 7:
+          form.feePayments = form.feePayments || [];
+
+          // Fetch the last payment's invoice number
+          _context13.next = 10;
+          return Form.findOne({
+            "feePayments.0": {
+              $exists: true
+            }
+          }).sort({
+            "feePayments._id": -1
+          }).select("feePayments");
+        case 10:
+          lastFormWithPayment = _context13.sent;
+          lastNumber = 2083; // Default starting number
+          if (lastFormWithPayment) {
+            lastPayment = lastFormWithPayment.feePayments[lastFormWithPayment.feePayments.length - 1];
+            lastId = (lastPayment === null || lastPayment === void 0 ? void 0 : lastPayment._id) || "";
+            match = lastId.match(/^CR-(\d{6})$/);
+            if (match) {
+              lastNumber = parseInt(match[1]);
+            }
+          }
+          newInvoiceNo = "CR-".concat(String(lastNumber + 1).padStart(6, "0"));
+          newPayment = {
+            _id: newInvoiceNo,
+            amount: amount,
+            paidBy: paidBy,
+            amountInWords: amountInWords,
+            receivedFrom: receivedFrom,
+            relationship: relationship,
+            date: new Date()
+          };
+          form.paidFee = (form.paidFee || 0) + amount;
+          form.feePayments.push(newPayment);
+          _context13.next = 19;
+          return form.save();
+        case 19:
+          res.send({
+            message: "Payment successful",
+            paymentId: newInvoiceNo,
+            updatedForm: form
+          });
+          _context13.next = 26;
+          break;
+        case 22:
+          _context13.prev = 22;
+          _context13.t0 = _context13["catch"](1);
+          console.error("Error processing payment:", _context13.t0.message);
+          res.status(500).json({
+            success: false,
+            message: "Payment processing failed"
+          });
+        case 26:
+        case "end":
+          return _context13.stop();
+      }
+    }, _callee13, null, [[1, 22]]);
+  }));
+  return function (_x25, _x26) {
+    return _ref13.apply(this, arguments);
+  };
+}();
+exports.getPaymentsForForm = /*#__PURE__*/function () {
+  var _ref14 = (0, _asyncToGenerator2["default"])(/*#__PURE__*/_regenerator["default"].mark(function _callee14(req, res) {
+    var id, form, feePaymentsWithFormId;
+    return _regenerator["default"].wrap(function _callee14$(_context14) {
+      while (1) switch (_context14.prev = _context14.next) {
+        case 0:
+          _context14.prev = 0;
+          id = req.params.id;
+          _context14.next = 4;
+          return Form.findById(id);
+        case 4:
+          form = _context14.sent;
+          if (form) {
+            _context14.next = 7;
+            break;
+          }
+          return _context14.abrupt("return", res.status(404).json({
+            success: false,
+            message: "Form not found"
+          }));
+        case 7:
+          feePaymentsWithFormId = form.feePayments.map(function (payment) {
+            return _objectSpread(_objectSpread({}, payment.toObject()), {}, {
+              // convert Mongoose subdoc to plain JS object
+              formId: form._id // manually add the form ID
+            });
+          });
+          res.status(200).json({
+            success: true,
+            data: {
+              paymentId: form._id,
+              cashNo: form.cashNo,
+              totalPaid: form.paidFee,
+              feePayments: feePaymentsWithFormId
+            }
+          });
+          _context14.next = 15;
+          break;
+        case 11:
+          _context14.prev = 11;
+          _context14.t0 = _context14["catch"](0);
+          console.error("Error fetching payments:", _context14.t0.message);
+          res.status(500).json({
+            success: false,
+            message: "Something went wrong"
+          });
+        case 15:
+        case "end":
+          return _context14.stop();
+      }
+    }, _callee14, null, [[0, 11]]);
+  }));
+  return function (_x27, _x28) {
+    return _ref14.apply(this, arguments);
+  };
+}();
+exports.getAllPayments = /*#__PURE__*/function () {
+  var _ref15 = (0, _asyncToGenerator2["default"])(/*#__PURE__*/_regenerator["default"].mark(function _callee15(req, res) {
+    var forms, allPayments;
+    return _regenerator["default"].wrap(function _callee15$(_context15) {
+      while (1) switch (_context15.prev = _context15.next) {
+        case 0:
+          _context15.prev = 0;
+          _context15.next = 3;
+          return Form.find({});
+        case 3:
+          forms = _context15.sent;
+          allPayments = forms.flatMap(function (form) {
+            return (form.feePayments || []).map(function (payment) {
+              var _form$particularsOfCh;
+              return {
+                paymentId: payment._id,
+                cashNo: payment.cashNo,
+                fullName: ((_form$particularsOfCh = form.particularsOfChild) === null || _form$particularsOfCh === void 0 ? void 0 : _form$particularsOfCh.fullName) || "",
+                registerNo: form.invoiceNo || "",
+                "class": form.admissionFor || "",
+                amount: payment.amount,
+                paidBy: payment.paidBy,
+                date: payment.date
+              };
+            });
+          });
+          res.status(200).json({
+            success: true,
+            data: allPayments
+          });
+          _context15.next = 12;
+          break;
+        case 8:
+          _context15.prev = 8;
+          _context15.t0 = _context15["catch"](0);
+          console.error("Error fetching all payments:", _context15.t0.message);
+          res.status(500).json({
+            success: false,
+            message: "Failed to fetch all payments"
+          });
+        case 12:
+        case "end":
+          return _context15.stop();
+      }
+    }, _callee15, null, [[0, 8]]);
+  }));
+  return function (_x29, _x30) {
+    return _ref15.apply(this, arguments);
+  };
+}();
+exports.getPaymentHistory = /*#__PURE__*/function () {
+  var _ref16 = (0, _asyncToGenerator2["default"])(/*#__PURE__*/_regenerator["default"].mark(function _callee16(req, res) {
+    var id, form, paymentHistory, overallPaidFee;
+    return _regenerator["default"].wrap(function _callee16$(_context16) {
+      while (1) switch (_context16.prev = _context16.next) {
+        case 0:
+          _context16.prev = 0;
+          id = req.params.id;
+          _context16.next = 4;
+          return Form.findById(id);
+        case 4:
+          form = _context16.sent;
+          if (form) {
+            _context16.next = 7;
+            break;
+          }
+          return _context16.abrupt("return", res.status(404).json({
+            success: false,
+            message: "Form not found"
+          }));
+        case 7:
+          // Prepare the payment history
+          paymentHistory = form.feePayments.map(function (payment) {
+            return {
+              cashNo: payment.cashNo,
+              date: payment.date,
+              amount: payment.amount
+            };
+          }); // Calculate the overall paid fee
+          overallPaidFee = form.paidFee;
+          res.status(200).json({
+            success: true,
+            data: {
+              formId: form._id,
+              overallPaidFee: overallPaidFee,
+              paymentHistory: paymentHistory
+            }
+          });
+          _context16.next = 16;
+          break;
+        case 12:
+          _context16.prev = 12;
+          _context16.t0 = _context16["catch"](0);
+          console.error("Error fetching payment history:", _context16.t0.message);
+          res.status(500).json({
+            success: false,
+            message: "Failed to fetch payment history"
+          });
+        case 16:
+        case "end":
+          return _context16.stop();
+      }
+    }, _callee16, null, [[0, 12]]);
+  }));
+  return function (_x31, _x32) {
+    return _ref16.apply(this, arguments);
   };
 }();
