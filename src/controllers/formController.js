@@ -1,7 +1,9 @@
 const Form = require("../module/formModel");
 const Student = require("../module/sutdent"); // Corrected the typo
 // const { sendEmail } = require('../mailer'); 
-const { sendInquiryEmail } = require('../mailer'); // Adjust the path as necessary
+const { sendInquiryEmail } = require('../mailer');
+ 
+  // Adjust the path as necessary
 // Adjust the path as necessary
 exports.submitForm = async (req, res) => {
   try {
@@ -17,7 +19,7 @@ exports.submitForm = async (req, res) => {
     res.status(500).json({ success: false, message: "Failed to save form" });
   }
 };
-
+ 
 exports.getFormById = async (req, res) => {
   try {
     const { id } = req.params;
@@ -147,6 +149,12 @@ exports.deleteStudent = async (req, res) => {
 exports.approveForm = async (req, res) => {
   try {
     const { id } = req.params;
+    const { feeAmount } = req.body; // Get fee amount from request body
+
+    // Validate fee amount
+    if (!feeAmount || isNaN(feeAmount) || feeAmount <= 0) {
+      return res.status(400).json({ success: false, message: "Invalid fee amount" });
+    }
 
     // Find the form with the highest invoice number
     const lastOrder = await Form.find({ invoiceNo: { $regex: /^KSS-\d{6}$/ } })
@@ -160,7 +168,7 @@ exports.approveForm = async (req, res) => {
         lastNumber = numberPart;
       }
     }
-    
+
     const newInvoiceNo = `KSS-${String(lastNumber + 1).padStart(6, "0")}`;
 
     // Check if the form is already approved to avoid double invoicing
@@ -171,11 +179,9 @@ exports.approveForm = async (req, res) => {
     if (existingForm.isApproved && existingForm.invoiceNo) {
       return res.status(400).json({ success: false, message: "Form already approved" });
     }
-
-    // Update the form with approval and invoice number
     const form = await Form.findByIdAndUpdate(
       id,
-      { isApproved: true, invoiceNo: newInvoiceNo },
+      { isApproved: true, invoiceNo: newInvoiceNo, feeAmount }, // Add feeAmount to update
       { new: true }
     );
 
@@ -214,5 +220,153 @@ exports.getApprovedForms = async (req, res) => {
   } catch (error) {
     console.error("Error fetching approved forms:", error.message);
     res.status(500).json({ success: false, message: "Failed to fetch approved forms" });
+  }
+};
+
+
+const mongoose = require("mongoose");
+
+exports.payForm = async (req, res) => {
+  const { amount, paidBy, amountInWords, receivedFrom, relationship } = req.body;
+
+  try {
+    const form = await Form.findById(req.params.id);
+    if (!form) return res.status(404).send("Form not found");
+
+    form.feePayments = form.feePayments || [];
+
+    // Fetch the last payment's invoice number
+    const lastFormWithPayment = await Form.findOne({ "feePayments.0": { $exists: true } })
+      .sort({ "feePayments._id": -1 })
+      .select("feePayments");
+
+    let lastNumber = 2083; // Default starting number
+    if (lastFormWithPayment) {
+      const lastPayment = lastFormWithPayment.feePayments[lastFormWithPayment.feePayments.length - 1];
+      const lastId = lastPayment?._id || "";
+      const match = lastId.match(/^CR-(\d{6})$/);
+      if (match) {
+        lastNumber = parseInt(match[1]);
+      }
+    }
+
+    const newInvoiceNo = `CR-${String(lastNumber + 1).padStart(6, "0")}`;
+
+    const newPayment = {
+      _id: newInvoiceNo,  
+      amount,
+      paidBy,
+      amountInWords,
+      receivedFrom,
+      relationship,
+      date: new Date()
+    };
+
+    form.paidFee = (form.paidFee || 0) + amount;
+    form.feePayments.push(newPayment);
+
+    await form.save();
+
+    res.send({
+      message: "Payment successful",
+      paymentId: newInvoiceNo,
+      updatedForm: form,
+    });
+  } catch (error) {
+    console.error("Error processing payment:", error.message);
+    res.status(500).json({ success: false, message: "Payment processing failed" });
+  }
+};
+
+
+exports.getPaymentsForForm = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const form = await Form.findById(id);
+
+    if (!form) {
+      return res.status(404).json({ success: false, message: "Form not found" });
+    }
+
+    const feePaymentsWithFormId = form.feePayments.map(payment => ({
+      ...payment.toObject(),  // convert Mongoose subdoc to plain JS object
+      formId: form._id        // manually add the form ID
+    }));
+
+    res.status(200).json({
+      success: true,
+      data: {
+        paymentId: form._id,
+        cashNo:form.cashNo,
+        totalPaid: form.paidFee,
+        feePayments: feePaymentsWithFormId
+      }
+    });
+  } catch (error) {
+    console.error("Error fetching payments:", error.message);
+    res.status(500).json({ success: false, message: "Something went wrong" });
+  }
+};
+
+
+
+ 
+exports.getAllPayments = async (req, res) => {
+  try {
+    const forms = await Form.find({});
+
+    const allPayments = forms.flatMap(form =>
+      (form.feePayments || []).map(payment => ({
+        paymentId: payment._id, 
+        cashNo: payment.cashNo,             
+        fullName: form.particularsOfChild?.fullName || "",
+        registerNo: form.invoiceNo || "",
+        class: form.admissionFor || "",
+        amount: payment.amount,
+        paidBy: payment.paidBy,
+        date: payment.date
+      }))
+    );
+
+    res.status(200).json({
+      success: true,
+      data: allPayments
+    });
+  } catch (error) {
+    console.error("Error fetching all payments:", error.message);
+    res.status(500).json({ success: false, message: "Failed to fetch all payments" });
+  }
+};
+
+exports.getPaymentHistory = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const form = await Form.findById(id);
+
+    if (!form) {
+      return res.status(404).json({ success: false, message: "Form not found" });
+    }
+
+    // Prepare the payment history
+    const paymentHistory = form.feePayments.map(payment => ({
+      cashNo: payment.cashNo,
+      date: payment.date,
+      amount: payment.amount,
+    }));
+
+    // Calculate the overall paid fee
+    const overallPaidFee = form.paidFee;
+
+    res.status(200).json({
+      success: true,
+      data: {
+        formId: form._id,
+        overallPaidFee,
+        paymentHistory,
+      }
+    });
+  } catch (error) {
+    console.error("Error fetching payment history:", error.message);
+    res.status(500).json({ success: false, message: "Failed to fetch payment history" });
   }
 };

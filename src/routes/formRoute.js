@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const {   submitStudent, getStudentById, getAllStudents, submitForm, getFormById, getAllForm, deleteForm, deleteStudent, getCounts, approveForm, getApprovedForms } = require("../controllers/formController");
+const {   submitStudent, getStudentById, getAllStudents, submitForm, getFormById, getAllForm, deleteForm, deleteStudent, getCounts, approveForm, getApprovedForms, payForm, getPaymentsForForm, getAllPayments, getPaymentHistory, } = require("../controllers/formController");
+ 
 
 // Form routes
 router.post("/submit", submitForm);
@@ -13,6 +14,10 @@ router.delete('/forms/:id', deleteForm); // Fetch all students
  router.get('/counts', getCounts);
 // Student routes
 router.post("/enquiry", submitStudent);
+router.post('/:id/pay', payForm);
+router.get('/:id/payments', getPaymentHistory);
+router.get('/payments/:id', getPaymentsForForm);
+router.get('/getbill', getAllPayments); 
 router.get("/students/:id", getStudentById); 
 router.get("/students", getAllStudents);
 router.delete('/enq/:id', deleteStudent); // Fetch all students

@@ -97,6 +97,21 @@ const formSchema = new mongoose.Schema({
   },
   isApproved: { type: Boolean, default: false }, // New field for approval status
   invoiceNo: { type: String, default: "" }, 
+  feeAmount: { type: Number, default: "" }, 
+  paidFee: { type: Number, default: 0 },
+  feePayments: [
+    {
+      _id: { type: String },
+      cashNo: { type: String, default: "" }, // Unique invoice number (cashNo)
+      amount: { type: Number },
+      paidBy: { type: String },
+      amountInWords: { type: String, default: "" }, // New field for amount in words
+      receivedFrom: { type: String, default: "" }, // New field for who made the payment
+      relationship: { type: String, default: "" }, // New field to capture relationship to the child
+      date: { type: Date, default: Date.now }
+    }
+  ]
+  
 }, { timestamps: true });
 
 module.exports = mongoose.model("Form", formSchema);

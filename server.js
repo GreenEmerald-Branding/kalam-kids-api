@@ -16,7 +16,11 @@ mongoose.connect(process.env.MONGO_URI).then(() => console.log("MongoDB connecte
 // Routes 
 const formRoute = require("./src/routes/formRoute");
 const authRoute = require("./src/routes/authRoute");
+// const billRoute = require("./src/controllers/billCountroller");
+
 app.use("/api/form", formRoute);
+// app.use("/api/form", billRoute);
+
 app.use("/api/form", authRoute);
 // Server
 const PORT = process.env.PORT || 5000;
