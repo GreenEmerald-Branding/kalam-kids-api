@@ -324,7 +324,11 @@ exports.getAllPayments = async (req, res) => {
         class: form.admissionFor || "",
         amount: payment.amount,
         paidBy: payment.paidBy,
-        date: payment.date
+        date: payment.date,
+        feeAmount:form.feeAmount,
+        paidFee:payment.amount,
+        amountInWords:payment.amountInWords
+
       }))
     );
 
