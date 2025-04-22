@@ -106,8 +106,13 @@ const formSchema = new mongoose.Schema({
       amount: { type: Number },
       paidBy: { type: String },
       amountInWords: { type: String, default: "" }, // New field for amount in words
-      receivedFrom: { type: String, default: "" }, // New field for who made the payment
-      relationship: { type: String, default: "" }, // New field to capture relationship to the child
+      cashReceivedFrom: { type: String, default: "" }, // New field for who made the payment
+      relationshipName: { type: String, default: "" },
+      chequeDetails:{ type: String, default: "" },
+      qrTransactionId:{ type: String, default: "" },
+      bankTransferId:{type: String, default: "" },
+      cashDenominations:{type: String, default: "" },
+      receiverName:{type: String, default: "" }, // New field to capture relationship to the child
       date: { type: Date, default: Date.now }
     }
   ]

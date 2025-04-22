@@ -224,10 +224,14 @@ exports.getApprovedForms = async (req, res) => {
 };
 
 
-const mongoose = require("mongoose");
+ 
 
 exports.payForm = async (req, res) => {
-  const { amount, paidBy, amountInWords, receivedFrom, relationship } = req.body;
+  const { amount, paidBy, amountInWords, cashReceivedFrom, relationshipName,  chequeDetails,
+    qrTransactionId,
+    bankTransferId,
+    cashDenominations,
+    receiverName, } = req.body;
 
   try {
     const form = await Form.findById(req.params.id);
@@ -257,8 +261,13 @@ exports.payForm = async (req, res) => {
       amount,
       paidBy,
       amountInWords,
-      receivedFrom,
-      relationship,
+      cashReceivedFrom,
+      relationshipName,
+      chequeDetails,
+      qrTransactionId,
+      bankTransferId,
+      cashDenominations,
+      receiverName,
       date: new Date()
     };
 
@@ -315,22 +324,38 @@ exports.getAllPayments = async (req, res) => {
   try {
     const forms = await Form.find({});
 
-    const allPayments = forms.flatMap(form =>
-      (form.feePayments || []).map(payment => ({
-        paymentId: payment._id, 
-        cashNo: payment.cashNo,             
-        fullName: form.particularsOfChild?.fullName || "",
-        registerNo: form.invoiceNo || "",
-        class: form.admissionFor || "",
-        amount: payment.amount,
-        paidBy: payment.paidBy,
-        date: payment.date,
-        feeAmount:form.feeAmount,
-        paidFee:payment.amount,
-        amountInWords:payment.amountInWords
+    const allPayments = forms.flatMap(form => {
+      let totalPaidFee = 0; // Initialize total paid fee for each form
 
-      }))
-    );
+      return (form.feePayments || []).map(payment => {
+        totalPaidFee += payment.amount || 0; // Accumulate the total paid fee
+
+        // Calculate remaining amount for this payment
+        const remaining = form.feeAmount - totalPaidFee; // Remaining amount after this payment
+
+        return {
+          paymentId: payment._id, 
+          cashNo: payment.cashNo,             
+          fullName: form.particularsOfChild?.fullName || "",
+          registerNo: form.invoiceNo || "",
+          class: form.admissionFor || "",
+          amount: payment.amount,
+          paidBy: payment.paidBy,
+          date: payment.date,
+          feeAmount: form.feeAmount,
+          paidFee: totalPaidFee, // Set total paid fee up to this payment
+          remaining, // Include remaining amount for this payment
+          amountInWords: payment.amountInWords,
+          cashReceivedFrom: payment.cashReceivedFrom,
+          relationshipName: payment.relationshipName,
+          chequeDetails: payment.chequeDetails,
+          qrTransactionId: payment.qrTransactionId,
+          bankTransferId: payment.bankTransferId,
+          cashDenominations: payment.cashDenominations,
+          receiverName: payment.receiverName,
+        };
+      });
+    });
 
     res.status(200).json({
       success: true,
