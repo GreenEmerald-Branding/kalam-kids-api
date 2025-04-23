@@ -70,5 +70,34 @@ const sendInquiryEmail = async (to, studentData) => {
     console.error("❌ Error sending inquiry email:", error);
   }
 };
+const sendAdmissionApprovalEmail = async (to, studentData) => {
+  try {
+    // Read the HTML template
+    const templatePath = path.join(__dirname, "Templetes/admissionApprovalNotification.html");
+    let template = fs.readFileSync(templatePath, 'utf8');
 
-module.exports = { sendInquiryEmail };
+    // Replace placeholders with actual data
+    template = template
+      .replace('{{studentName}}', studentData.studentName)
+      .replace('{{admissionNumber}}', studentData.admissionNumber)
+      .replace('{{parentType}}', studentData.parentType);
+
+    // Mail options for the parent
+    const mailOptions = {
+      from: process.env.EMAIL_USER, // Use the environment variable for the sender's email
+      to: to, // Parent's email
+      subject: 'Admission Approval Notification',
+      html: template,
+    };
+
+    // Send email to the parent
+    await transporter.sendMail(mailOptions);
+    console.log(`📧 Admission approval email sent to: ${to}`);
+
+  } catch (error) {
+    console.error("❌ Error sending admission approval email:", error);
+  }
+};
+
+module.exports = { sendInquiryEmail, sendAdmissionApprovalEmail };
+ 

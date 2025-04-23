@@ -14,6 +14,8 @@ const formSchema = new mongoose.Schema({
       language: { type: String },
       otherLanguage: { type: String, default: "" },
       age: { type: String },
+      blood: { type: String },
+
       houseNo: { type: String },
       buildingName: { type: String, default: "" },
       streetName: { type: String },
@@ -45,8 +47,12 @@ const formSchema = new mongoose.Schema({
   },
 
   childPersonalBackground: {
-    characteristics: { type: [String], default: [] },
     PreviousSchooling: { type: String, default: "" },
+    characteristics: {
+      type: [String],
+      default: []
+    },
+
     PreviousSchoolingDetails: { type: String, default: "" },
     Toilettrained: { type: String, default: "" },
     Siblings: {

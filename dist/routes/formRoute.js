@@ -17,7 +17,8 @@ var _require = require("../controllers/formController"),
   payForm = _require.payForm,
   getPaymentsForForm = _require.getPaymentsForForm,
   getAllPayments = _require.getAllPayments,
-  getPaymentHistory = _require.getPaymentHistory;
+  getPaymentHistory = _require.getPaymentHistory,
+  getOverallPayment = _require.getOverallPayment;
 
 // Form routes
 router.post("/submit", submitForm);
@@ -28,6 +29,7 @@ router.get("/approved", getApprovedForms); // Add this line for approval
 router["delete"]('/forms/:id', deleteForm); // Fetch all students
 // Fetch form by ID
 router.get('/counts', getCounts);
+router.get('/overall-payment', getOverallPayment);
 // Student routes
 router.post("/enquiry", submitStudent);
 router.post('/:id/pay', payForm);

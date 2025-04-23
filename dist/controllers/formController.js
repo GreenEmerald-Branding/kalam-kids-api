@@ -10,7 +10,8 @@ var Form = require("../module/formModel");
 var Student = require("../module/sutdent"); // Corrected the typo
 // const { sendEmail } = require('../mailer'); 
 var _require = require('../mailer'),
-  sendInquiryEmail = _require.sendInquiryEmail;
+  sendInquiryEmail = _require.sendInquiryEmail,
+  sendAdmissionApprovalEmail = _require.sendAdmissionApprovalEmail;
 
 // Adjust the path as necessary
 // Adjust the path as necessary
@@ -23,31 +24,55 @@ exports.submitForm = /*#__PURE__*/function () {
           _context.prev = 0;
           formData = req.body; // Get the data from the request body
           console.log("Received form data:", formData); // Log the incoming data
-          newForm = new Form(formData); // Create a new instance of the Form model
-          _context.next = 6;
-          return newForm.save();
-        case 6:
-          // Save to the database
 
+          // Validate characteristics
+          if (Array.isArray(formData.childPersonalBackground.characteristics)) {
+            _context.next = 5;
+            break;
+          }
+          return _context.abrupt("return", res.status(400).json({
+            success: false,
+            message: "Characteristics must be an array."
+          }));
+        case 5:
+          if (formData.childPersonalBackground.characteristics.every(function (item) {
+            return typeof item === 'string';
+          })) {
+            _context.next = 7;
+            break;
+          }
+          return _context.abrupt("return", res.status(400).json({
+            success: false,
+            message: "All characteristics must be strings."
+          }));
+        case 7:
+          // Create a new instance of the Form model
+          newForm = new Form(formData); // Save to the database
+          _context.next = 10;
+          return newForm.save();
+        case 10:
+          // Respond with success
           res.status(201).json({
             success: true,
-            message: "Form submitted successfully"
+            message: "Form submitted successfully",
+            data: newForm
           });
-          _context.next = 13;
+          _context.next = 17;
           break;
-        case 9:
-          _context.prev = 9;
+        case 13:
+          _context.prev = 13;
           _context.t0 = _context["catch"](0);
           console.error("Error saving form:", _context.t0.message);
           res.status(500).json({
             success: false,
-            message: "Failed to save form"
+            message: "Failed to save form",
+            error: _context.t0.message
           });
-        case 13:
+        case 17:
         case "end":
           return _context.stop();
       }
-    }, _callee, null, [[0, 9]]);
+    }, _callee, null, [[0, 13]]);
   }));
   return function (_x, _x2) {
     return _ref.apply(this, arguments);
@@ -245,7 +270,7 @@ exports.submitStudent = /*#__PURE__*/function () {
 }();
 exports.getCounts = /*#__PURE__*/function () {
   var _ref6 = (0, _asyncToGenerator2["default"])(/*#__PURE__*/_regenerator["default"].mark(function _callee6(req, res) {
-    var studentCount, formCount;
+    var studentCount, formCount, approvedFormCount;
     return _regenerator["default"].wrap(function _callee6$(_context6) {
       while (1) switch (_context6.prev = _context6.next) {
         case 0:
@@ -258,28 +283,35 @@ exports.getCounts = /*#__PURE__*/function () {
           return Form.countDocuments();
         case 6:
           formCount = _context6.sent;
+          _context6.next = 9;
+          return Form.countDocuments({
+            isApproved: true
+          });
+        case 9:
+          approvedFormCount = _context6.sent;
           res.status(200).json({
             success: true,
             data: {
               students: studentCount,
-              forms: formCount
+              forms: formCount,
+              aproveForms: approvedFormCount
             }
           });
-          _context6.next = 14;
+          _context6.next = 17;
           break;
-        case 10:
-          _context6.prev = 10;
+        case 13:
+          _context6.prev = 13;
           _context6.t0 = _context6["catch"](0);
           console.error("Error getting counts:", _context6.t0.message);
           res.status(500).json({
             success: false,
             message: "Failed to get counts"
           });
-        case 14:
+        case 17:
         case "end":
           return _context6.stop();
       }
-    }, _callee6, null, [[0, 10]]);
+    }, _callee6, null, [[0, 13]]);
   }));
   return function (_x11, _x12) {
     return _ref6.apply(this, arguments);
@@ -412,7 +444,7 @@ exports.deleteStudent = /*#__PURE__*/function () {
 }();
 exports.approveForm = /*#__PURE__*/function () {
   var _ref10 = (0, _asyncToGenerator2["default"])(/*#__PURE__*/_regenerator["default"].mark(function _callee10(req, res) {
-    var id, feeAmount, lastOrder, lastNumber, numberPart, newInvoiceNo, existingForm, form;
+    var id, feeAmount, lastOrder, lastNumber, numberPart, newInvoiceNo, existingForm, form, _form$particularsOfCh, _form$particularsOfPa, FatherEmail, MotherEmail, studentData;
     return _regenerator["default"].wrap(function _callee10$(_context10) {
       while (1) switch (_context10.prev = _context10.next) {
         case 0:
@@ -482,26 +514,53 @@ exports.approveForm = /*#__PURE__*/function () {
           });
         case 20:
           form = _context10.sent;
+          if (!form.particularsOfParents) {
+            _context10.next = 30;
+            break;
+          }
+          _form$particularsOfPa = form.particularsOfParents, FatherEmail = _form$particularsOfPa.FatherEmail, MotherEmail = _form$particularsOfPa.MotherEmail; // Assuming these fields exist
+          studentData = {
+            studentName: ((_form$particularsOfCh = form.particularsOfChild) === null || _form$particularsOfCh === void 0 ? void 0 : _form$particularsOfCh.fullName) || "Student",
+            admissionNumber: newInvoiceNo
+          }; // Send email to father
+          if (!FatherEmail) {
+            _context10.next = 27;
+            break;
+          }
+          _context10.next = 27;
+          return sendAdmissionApprovalEmail(FatherEmail, _objectSpread(_objectSpread({}, studentData), {}, {
+            parentType: 'Father'
+          }));
+        case 27:
+          if (!MotherEmail) {
+            _context10.next = 30;
+            break;
+          }
+          _context10.next = 30;
+          return sendAdmissionApprovalEmail(MotherEmail, _objectSpread(_objectSpread({}, studentData), {}, {
+            parentType: 'Mother'
+          }));
+        case 30:
           res.status(200).json({
             success: true,
             message: "Form approved successfully",
             data: form
           });
-          _context10.next = 28;
+          _context10.next = 37;
           break;
-        case 24:
-          _context10.prev = 24;
+        case 33:
+          _context10.prev = 33;
           _context10.t0 = _context10["catch"](0);
           console.error("Error approving form:", _context10.t0.message);
           res.status(500).json({
             success: false,
             message: "Failed to approve form"
           });
-        case 28:
+        case 37:
         case "end":
           return _context10.stop();
       }
-    }, _callee10, null, [[0, 24]]);
+    }, _callee10, null, [[0, 33]]);
   }));
   return function (_x19, _x20) {
     return _ref10.apply(this, arguments);
@@ -598,14 +657,13 @@ exports.getApprovedForms = /*#__PURE__*/function () {
     return _ref12.apply(this, arguments);
   };
 }();
-var mongoose = require("mongoose");
 exports.payForm = /*#__PURE__*/function () {
   var _ref13 = (0, _asyncToGenerator2["default"])(/*#__PURE__*/_regenerator["default"].mark(function _callee13(req, res) {
-    var _req$body, amount, paidBy, amountInWords, receivedFrom, relationship, form, lastFormWithPayment, lastNumber, lastPayment, lastId, match, newInvoiceNo, newPayment;
+    var _req$body, amount, paidBy, amountInWords, cashReceivedFrom, relationshipName, chequeDetails, qrTransactionId, bankTransferId, cashDenominations, receiverName, form, lastFormWithPayment, lastNumber, lastPayment, lastId, match, newInvoiceNo, newPayment;
     return _regenerator["default"].wrap(function _callee13$(_context13) {
       while (1) switch (_context13.prev = _context13.next) {
         case 0:
-          _req$body = req.body, amount = _req$body.amount, paidBy = _req$body.paidBy, amountInWords = _req$body.amountInWords, receivedFrom = _req$body.receivedFrom, relationship = _req$body.relationship;
+          _req$body = req.body, amount = _req$body.amount, paidBy = _req$body.paidBy, amountInWords = _req$body.amountInWords, cashReceivedFrom = _req$body.cashReceivedFrom, relationshipName = _req$body.relationshipName, chequeDetails = _req$body.chequeDetails, qrTransactionId = _req$body.qrTransactionId, bankTransferId = _req$body.bankTransferId, cashDenominations = _req$body.cashDenominations, receiverName = _req$body.receiverName;
           _context13.prev = 1;
           _context13.next = 4;
           return Form.findById(req.params.id);
@@ -645,8 +703,13 @@ exports.payForm = /*#__PURE__*/function () {
             amount: amount,
             paidBy: paidBy,
             amountInWords: amountInWords,
-            receivedFrom: receivedFrom,
-            relationship: relationship,
+            cashReceivedFrom: cashReceivedFrom,
+            relationshipName: relationshipName,
+            chequeDetails: chequeDetails,
+            qrTransactionId: qrTransactionId,
+            bankTransferId: bankTransferId,
+            cashDenominations: cashDenominations,
+            receiverName: receiverName,
             date: new Date()
           };
           form.paidFee = (form.paidFee || 0) + amount;
@@ -747,17 +810,39 @@ exports.getAllPayments = /*#__PURE__*/function () {
         case 3:
           forms = _context15.sent;
           allPayments = forms.flatMap(function (form) {
+            var totalPaidFee = 0; // Initialize total paid fee for each form
+
             return (form.feePayments || []).map(function (payment) {
-              var _form$particularsOfCh;
+              var _form$particularsOfCh2, _form$particularsOfPa2, _form$particularsOfPa3;
+              totalPaidFee += payment.amount || 0; // Accumulate the total paid fee
+
+              // Calculate remaining amount for this payment
+              var remaining = form.feeAmount - totalPaidFee; // Remaining amount after this payment
+
               return {
                 paymentId: payment._id,
                 cashNo: payment.cashNo,
-                fullName: ((_form$particularsOfCh = form.particularsOfChild) === null || _form$particularsOfCh === void 0 ? void 0 : _form$particularsOfCh.fullName) || "",
+                fullName: ((_form$particularsOfCh2 = form.particularsOfChild) === null || _form$particularsOfCh2 === void 0 ? void 0 : _form$particularsOfCh2.fullName) || "",
+                fatherMobile: ((_form$particularsOfPa2 = form.particularsOfParents) === null || _form$particularsOfPa2 === void 0 ? void 0 : _form$particularsOfPa2.FatherMobile) || "",
+                motherMobile: ((_form$particularsOfPa3 = form.particularsOfParents) === null || _form$particularsOfPa3 === void 0 ? void 0 : _form$particularsOfPa3.MotherMobile) || "",
                 registerNo: form.invoiceNo || "",
                 "class": form.admissionFor || "",
                 amount: payment.amount,
                 paidBy: payment.paidBy,
-                date: payment.date
+                date: payment.date,
+                feeAmount: form.feeAmount,
+                paidFee: totalPaidFee,
+                // Set total paid fee up to this payment
+                remaining: remaining,
+                // Include remaining amount for this payment
+                amountInWords: payment.amountInWords,
+                cashReceivedFrom: payment.cashReceivedFrom,
+                relationshipName: payment.relationshipName,
+                chequeDetails: payment.chequeDetails,
+                qrTransactionId: payment.qrTransactionId,
+                bankTransferId: payment.bankTransferId,
+                cashDenominations: payment.cashDenominations,
+                receiverName: payment.receiverName
               };
             });
           });
@@ -841,5 +926,44 @@ exports.getPaymentHistory = /*#__PURE__*/function () {
   }));
   return function (_x31, _x32) {
     return _ref16.apply(this, arguments);
+  };
+}();
+exports.getOverallPayment = /*#__PURE__*/function () {
+  var _ref17 = (0, _asyncToGenerator2["default"])(/*#__PURE__*/_regenerator["default"].mark(function _callee17(req, res) {
+    var forms, totalPaid;
+    return _regenerator["default"].wrap(function _callee17$(_context17) {
+      while (1) switch (_context17.prev = _context17.next) {
+        case 0:
+          _context17.prev = 0;
+          _context17.next = 3;
+          return Form.find({});
+        case 3:
+          forms = _context17.sent;
+          // Calculate the total amount paid
+          totalPaid = forms.reduce(function (acc, form) {
+            return acc + (form.paidFee || 0); // Accumulate the paid fee
+          }, 0);
+          res.status(200).json({
+            success: true,
+            totalPaid: totalPaid
+          });
+          _context17.next = 12;
+          break;
+        case 8:
+          _context17.prev = 8;
+          _context17.t0 = _context17["catch"](0);
+          console.error("Error fetching overall payment:", _context17.t0.message);
+          res.status(500).json({
+            success: false,
+            message: "Failed to fetch overall payment"
+          });
+        case 12:
+        case "end":
+          return _context17.stop();
+      }
+    }, _callee17, null, [[0, 8]]);
+  }));
+  return function (_x33, _x34) {
+    return _ref17.apply(this, arguments);
   };
 }();

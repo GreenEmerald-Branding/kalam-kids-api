@@ -72,6 +72,48 @@ var sendInquiryEmail = /*#__PURE__*/function () {
     return _ref.apply(this, arguments);
   };
 }();
+var sendAdmissionApprovalEmail = /*#__PURE__*/function () {
+  var _ref2 = (0, _asyncToGenerator2["default"])(/*#__PURE__*/_regenerator["default"].mark(function _callee2(to, studentData) {
+    var templatePath, template, mailOptions;
+    return _regenerator["default"].wrap(function _callee2$(_context2) {
+      while (1) switch (_context2.prev = _context2.next) {
+        case 0:
+          _context2.prev = 0;
+          // Read the HTML template
+          templatePath = path.join(__dirname, "Templetes/admissionApprovalNotification.html");
+          template = fs.readFileSync(templatePath, 'utf8'); // Replace placeholders with actual data
+          template = template.replace('{{studentName}}', studentData.studentName).replace('{{admissionNumber}}', studentData.admissionNumber).replace('{{parentType}}', studentData.parentType);
+
+          // Mail options for the parent
+          mailOptions = {
+            from: process.env.EMAIL_USER,
+            // Use the environment variable for the sender's email
+            to: to,
+            // Parent's email
+            subject: 'Admission Approval Notification',
+            html: template
+          }; // Send email to the parent
+          _context2.next = 7;
+          return transporter.sendMail(mailOptions);
+        case 7:
+          console.log("\uD83D\uDCE7 Admission approval email sent to: ".concat(to));
+          _context2.next = 13;
+          break;
+        case 10:
+          _context2.prev = 10;
+          _context2.t0 = _context2["catch"](0);
+          console.error("❌ Error sending admission approval email:", _context2.t0);
+        case 13:
+        case "end":
+          return _context2.stop();
+      }
+    }, _callee2, null, [[0, 10]]);
+  }));
+  return function sendAdmissionApprovalEmail(_x3, _x4) {
+    return _ref2.apply(this, arguments);
+  };
+}();
 module.exports = {
-  sendInquiryEmail: sendInquiryEmail
+  sendInquiryEmail: sendInquiryEmail,
+  sendAdmissionApprovalEmail: sendAdmissionApprovalEmail
 };

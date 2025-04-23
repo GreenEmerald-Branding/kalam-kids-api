@@ -37,6 +37,9 @@ var formSchema = new mongoose.Schema({
     age: {
       type: String
     },
+    blood: {
+      type: String
+    },
     houseNo: {
       type: String
     },
@@ -125,13 +128,13 @@ var formSchema = new mongoose.Schema({
     }
   },
   childPersonalBackground: {
-    characteristics: {
-      type: [String],
-      "default": []
-    },
     PreviousSchooling: {
       type: String,
       "default": ""
+    },
+    characteristics: {
+      type: [String],
+      "default": []
     },
     PreviousSchoolingDetails: {
       type: String,
@@ -351,12 +354,32 @@ var formSchema = new mongoose.Schema({
       "default": ""
     },
     // New field for amount in words
-    receivedFrom: {
+    cashReceivedFrom: {
       type: String,
       "default": ""
     },
     // New field for who made the payment
-    relationship: {
+    relationshipName: {
+      type: String,
+      "default": ""
+    },
+    chequeDetails: {
+      type: String,
+      "default": ""
+    },
+    qrTransactionId: {
+      type: String,
+      "default": ""
+    },
+    bankTransferId: {
+      type: String,
+      "default": ""
+    },
+    cashDenominations: {
+      type: String,
+      "default": ""
+    },
+    receiverName: {
       type: String,
       "default": ""
     },

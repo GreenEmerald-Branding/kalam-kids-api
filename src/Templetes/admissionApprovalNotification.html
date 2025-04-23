@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>New Student Enquiry Notification</title>
+  <title>Admission Approval Notification</title>
 
   <!-- Google Fonts -->
   <style>
@@ -37,7 +37,7 @@
     }
 
     h1 {
-      color: #16bab1;
+      color:  #16bab1;
       font-size: 24px;
       margin-bottom: 20px;
       font-weight: 600;
@@ -51,15 +51,23 @@
     }
 
     ul {
-      list-style-type: none;
-      padding-left: 0;
+      padding-left: 20px;
       margin-bottom: 20px;
     }
 
     li {
       color: #444;
       font-size: 15px;
-      margin: 5px 0;
+    }
+
+    a.website-link {
+      color: #16bab1;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    a.website-link:hover {
+      text-decoration: underline;
     }
 
     .social-icons {
@@ -89,14 +97,18 @@
 </head>
 <body>
   <div class="container">
-    <h1>Dear Parent,</h1>
-    <p>We have received a new enquiry for admission at <strong style="color:#16bab1;">Kalam Kids Kindergarten</strong>.</p>
+    <h1>Admission Approved for {{studentName}}</h1>
+    <p>Dear {{parentType}},</p>
+    <p>We are pleased to inform you that your child's admission has been approved. Below are the details:</p>
     <ul>
-      <li><strong>Child Name:</strong> {{studentName}}</li>
+      <li><strong>Admission Number:</strong> {{admissionNumber}}</li>
     </ul>
-    <p>Thank you for your interest in joining the Kalam Kids family. Our team will get in touch with you shortly to guide you through the next steps.</p>
-    <p>If you have any immediate questions, feel free to contact us.</p>
-    <p>Warm regards,<br><strong>The Kalam Kids Team</strong></p>
+    <p>Thank you for choosing <span style="color: #16bab1; font-weight: 600;">Kalamkids Kindergarten</span> for your child's education. We look forward to welcoming you and your child to our joyful and nurturing learning environment.</p>
+    <p>If you have any questions, feel free to reach out to us.</p>
+    <p>Best regards,<br/>The Admissions Team</p>
+    <p>For more information, visit: 
+      <a href="https://www.kalamkids.in/" target="_blank" class="website-link">www.kalamkids.in</a>
+    </p>
 
     <div class="social-icons">
       <a href="https://www.facebook.com/KalamKidsKindergarten" target="_blank">
@@ -115,7 +127,7 @@
 
     <div class="contact-info">
       Cell: 9994558487, 9488440066<br/>
-      Website: <a href="https://www.kalamkids.in/" target="_blank" style="color:#16bab1; font-weight:600;">www.kalamkids.in</a><br/>
+      Website: <a href="https://www.kalamkids.in/" target="_blank" class="website-link">www.kalamkids.in</a><br/>
       #23, New Shankaranpalayam Road, Near Tollgate,<br/>
       Vellore - 632 001, Tamil Nadu.
     </div>

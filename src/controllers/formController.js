@@ -1,7 +1,7 @@
 const Form = require("../module/formModel");
 const Student = require("../module/sutdent"); // Corrected the typo
 // const { sendEmail } = require('../mailer'); 
-const { sendInquiryEmail } = require('../mailer');
+const { sendInquiryEmail, sendAdmissionApprovalEmail } = require('../mailer');
  
   // Adjust the path as necessary
 // Adjust the path as necessary
@@ -10,16 +10,29 @@ exports.submitForm = async (req, res) => {
     const formData = req.body; // Get the data from the request body
     console.log("Received form data:", formData); // Log the incoming data
 
-    const newForm = new Form(formData); // Create a new instance of the Form model
-    await newForm.save(); // Save to the database
+    // Validate characteristics
+    if (!Array.isArray(formData.childPersonalBackground.characteristics)) {
+      return res.status(400).json({ success: false, message: "Characteristics must be an array." });
+    }
 
-    res.status(201).json({ success: true, message: "Form submitted successfully" });
+    // Validate that all elements in the characteristics array are strings
+    if (!formData.childPersonalBackground.characteristics.every(item => typeof item === 'string')) {
+      return res.status(400).json({ success: false, message: "All characteristics must be strings." });
+    }
+
+    // Create a new instance of the Form model
+    const newForm = new Form(formData);
+
+    // Save to the database
+    await newForm.save();
+
+    // Respond with success
+    res.status(201).json({ success: true, message: "Form submitted successfully", data: newForm });
   } catch (error) {
     console.error("Error saving form:", error.message);
-    res.status(500).json({ success: false, message: "Failed to save form" });
+    res.status(500).json({ success: false, message: "Failed to save form", error: error.message });
   }
-};
- 
+}
 exports.getFormById = async (req, res) => {
   try {
     const { id } = req.params;
@@ -93,11 +106,13 @@ exports.getCounts = async (req, res) => {
     const studentCount = await Student.countDocuments();
     const formCount = await Form.countDocuments();
     
+    const approvedFormCount = await Form.countDocuments({ isApproved: true });
     res.status(200).json({
       success: true,
       data: {
         students: studentCount,
-        forms: formCount
+        forms: formCount,
+        aproveForms: approvedFormCount
       }
     });
   } catch (error) {
@@ -179,11 +194,32 @@ exports.approveForm = async (req, res) => {
     if (existingForm.isApproved && existingForm.invoiceNo) {
       return res.status(400).json({ success: false, message: "Form already approved" });
     }
+
+    // Update the form to mark it as approved
     const form = await Form.findByIdAndUpdate(
       id,
       { isApproved: true, invoiceNo: newInvoiceNo, feeAmount }, // Add feeAmount to update
       { new: true }
     );
+
+    // Send email notification to parents
+    if (form.particularsOfParents) {
+      const { FatherEmail, MotherEmail } = form.particularsOfParents; // Assuming these fields exist
+      const studentData = {
+        studentName: form.particularsOfChild?.fullName || "Student",
+        admissionNumber: newInvoiceNo,
+      };
+
+      // Send email to father
+      if (FatherEmail) {
+        await sendAdmissionApprovalEmail(FatherEmail, { ...studentData, parentType: 'Father' });
+      }
+
+      // Send email to mother
+      if (MotherEmail) {
+        await sendAdmissionApprovalEmail(MotherEmail, { ...studentData, parentType: 'Mother' });
+      }
+    }
 
     res.status(200).json({ success: true, message: "Form approved successfully", data: form });
   } catch (error) {
@@ -337,6 +373,9 @@ exports.getAllPayments = async (req, res) => {
           paymentId: payment._id, 
           cashNo: payment.cashNo,             
           fullName: form.particularsOfChild?.fullName || "",
+          fatherMobile: form.particularsOfParents?.FatherMobile || "",
+          motherMobile: form.particularsOfParents?.MotherMobile || "",
+
           registerNo: form.invoiceNo || "",
           class: form.admissionFor || "",
           amount: payment.amount,
@@ -397,5 +436,23 @@ exports.getPaymentHistory = async (req, res) => {
   } catch (error) {
     console.error("Error fetching payment history:", error.message);
     res.status(500).json({ success: false, message: "Failed to fetch payment history" });
+  }
+};
+exports.getOverallPayment = async (req, res) => {
+  try {
+    const forms = await Form.find({});
+    
+    // Calculate the total amount paid
+    const totalPaid = forms.reduce((acc, form) => {
+      return acc + (form.paidFee || 0); // Accumulate the paid fee
+    }, 0);
+
+    res.status(200).json({
+      success: true,
+      totalPaid,
+    });
+  } catch (error) {
+    console.error("Error fetching overall payment:", error.message);
+    res.status(500).json({ success: false, message: "Failed to fetch overall payment" });
   }
 };
