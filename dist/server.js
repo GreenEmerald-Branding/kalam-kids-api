@@ -20,12 +20,16 @@ mongoose.connect(process.env.MONGO_URI).then(function () {
 // Routes 
 var formRoute = require("./src/routes/formRoute");
 var authRoute = require("./src/routes/authRoute");
+var expansiveRoute = require("./src/routes/expansiveRoute");
+
 // const billRoute = require("./src/controllers/billCountroller");
 
 app.use("/api/form", formRoute);
 // app.use("/api/form", billRoute);
 
 app.use("/api/form", authRoute);
+app.use("/api/form", expansiveRoute);
+
 // Server
 var PORT = process.env.PORT || 5000;
 app.listen(PORT, function () {
