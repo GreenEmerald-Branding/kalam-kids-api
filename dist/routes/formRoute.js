@@ -19,18 +19,14 @@ var _require = require("../controllers/formController"),
   getAllPayments = _require.getAllPayments,
   getPaymentHistory = _require.getPaymentHistory,
   getOverallPayment = _require.getOverallPayment;
-
-// Form routes
 router.post("/submit", submitForm);
 router.get("/form/:id", getFormById);
 router.get("/form", getAllForm);
 router.put("/form/approve/:id", approveForm);
-router.get("/approved", getApprovedForms); // Add this line for approval
-router["delete"]('/forms/:id', deleteForm); // Fetch all students
-// Fetch form by ID
+router.get("/approved", getApprovedForms);
+router["delete"]('/forms/:id', deleteForm);
 router.get('/counts', getCounts);
 router.get('/overall-payment', getOverallPayment);
-// Student routes
 router.post("/enquiry", submitStudent);
 router.post('/:id/pay', payForm);
 router.get('/:id/payments', getPaymentHistory);
@@ -38,6 +34,5 @@ router.get('/payments/:id', getPaymentsForForm);
 router.get('/getbill', getAllPayments);
 router.get("/students/:id", getStudentById);
 router.get("/students", getAllStudents);
-router["delete"]('/enq/:id', deleteStudent); // Fetch all students
-
+router["delete"]('/enq/:id', deleteStudent);
 module.exports = router;

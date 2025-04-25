@@ -236,8 +236,6 @@ exports.getCategories = /*#__PURE__*/function () {
     return _ref5.apply(this, arguments);
   };
 }();
-
-// Add a new category
 exports.addCategory = /*#__PURE__*/function () {
   var _ref6 = (0, _asyncToGenerator2["default"])(/*#__PURE__*/_regenerator["default"].mark(function _callee6(req, res) {
     var name, newCategory;
@@ -276,8 +274,6 @@ exports.addCategory = /*#__PURE__*/function () {
     return _ref6.apply(this, arguments);
   };
 }();
-
-// Update an existing category
 exports.updateCategory = /*#__PURE__*/function () {
   var _ref7 = (0, _asyncToGenerator2["default"])(/*#__PURE__*/_regenerator["default"].mark(function _callee7(req, res) {
     var id, name, updatedCategory;
@@ -328,8 +324,6 @@ exports.updateCategory = /*#__PURE__*/function () {
     return _ref7.apply(this, arguments);
   };
 }();
-
-// Delete a category
 exports.deleteCategory = /*#__PURE__*/function () {
   var _ref8 = (0, _asyncToGenerator2["default"])(/*#__PURE__*/_regenerator["default"].mark(function _callee8(req, res) {
     var id, deletedCategory;

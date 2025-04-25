@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const studentSchema = new mongoose.Schema({
   studentName: { type: String, required: true },
   gender: { type: String, default: 'Not Specified' },
-  dob: { type: Date }, // Use Date type for date of birth
+  dob: { type: Date }, 
   fatherName: { type: String, required: true },
   fatherMobile: { type: String, required: true },
   fatherEmail: { type: String, index: true },
@@ -13,10 +13,10 @@ const studentSchema = new mongoose.Schema({
   area: { type: String },
   city: { type: String },
   state: { type: String },
-  age: { type: Number }, // Use Number type for age
-  plotNo: { type: String }, // Optional field
-  street: { type: String }, // Optional field
+  age: { type: Number }, 
+  plotNo: { type: String },
+  street: { type: String }, 
   landmark: { type: String },
-}, { timestamps: true }); // Automatically manage createdAt and updatedAt fields
+}, { timestamps: true }); 
 
 module.exports = mongoose.model("Student", studentSchema);

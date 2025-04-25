@@ -66,9 +66,6 @@ exports.register = /*#__PURE__*/function () {
     return _ref.apply(this, arguments);
   };
 }();
-
-// Login a user
-// src/controllers/authController.js
 exports.login = /*#__PURE__*/function () {
   var _ref2 = (0, _asyncToGenerator2["default"])(/*#__PURE__*/_regenerator["default"].mark(function _callee2(req, res) {
     var _req$body2, username, password, user, isMatch, token;

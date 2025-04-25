@@ -24,8 +24,7 @@ exports.register = async (req, res) => {
   }
 };
 
-// Login a user
-// src/controllers/authController.js
+ 
 exports.login = async (req, res) => {
     try {
       const { username, password } = req.body;

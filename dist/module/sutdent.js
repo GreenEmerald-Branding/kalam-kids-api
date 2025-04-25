@@ -13,7 +13,6 @@ var studentSchema = new mongoose.Schema({
   dob: {
     type: Date
   },
-  // Use Date type for date of birth
   fatherName: {
     type: String,
     required: true
@@ -48,20 +47,16 @@ var studentSchema = new mongoose.Schema({
   age: {
     type: Number
   },
-  // Use Number type for age
   plotNo: {
     type: String
   },
-  // Optional field
   street: {
     type: String
   },
-  // Optional field
   landmark: {
     type: String
   }
 }, {
   timestamps: true
-}); // Automatically manage createdAt and updatedAt fields
-
+});
 module.exports = mongoose.model("Student", studentSchema);

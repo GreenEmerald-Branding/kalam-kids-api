@@ -321,7 +321,6 @@ var formSchema = new mongoose.Schema({
     type: Boolean,
     "default": false
   },
-  // New field for approval status
   invoiceNo: {
     type: String,
     "default": ""
@@ -342,7 +341,6 @@ var formSchema = new mongoose.Schema({
       type: String,
       "default": ""
     },
-    // Unique invoice number (cashNo)
     amount: {
       type: Number
     },
@@ -353,12 +351,10 @@ var formSchema = new mongoose.Schema({
       type: String,
       "default": ""
     },
-    // New field for amount in words
     cashReceivedFrom: {
       type: String,
       "default": ""
     },
-    // New field for who made the payment
     relationshipName: {
       type: String,
       "default": ""
@@ -383,7 +379,6 @@ var formSchema = new mongoose.Schema({
       type: String,
       "default": ""
     },
-    // New field to capture relationship to the child
     date: {
       type: Date,
       "default": Date.now

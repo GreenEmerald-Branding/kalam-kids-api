@@ -101,24 +101,24 @@ const formSchema = new mongoose.Schema({
     specialEventsCost: { type:String,  default: false },
     attendMeetings: { type:String,  default: false },
   },
-  isApproved: { type: Boolean, default: false }, // New field for approval status
+  isApproved: { type: Boolean, default: false }, 
   invoiceNo: { type: String, default: "" }, 
   feeAmount: { type: Number, default: "" }, 
   paidFee: { type: Number, default: 0 },
   feePayments: [
     {
       _id: { type: String },
-      cashNo: { type: String, default: "" }, // Unique invoice number (cashNo)
+      cashNo: { type: String, default: "" },
       amount: { type: Number },
       paidBy: { type: String },
-      amountInWords: { type: String, default: "" }, // New field for amount in words
-      cashReceivedFrom: { type: String, default: "" }, // New field for who made the payment
+      amountInWords: { type: String, default: "" }, 
+      cashReceivedFrom: { type: String, default: "" }, 
       relationshipName: { type: String, default: "" },
       chequeDetails:{ type: String, default: "" },
       qrTransactionId:{ type: String, default: "" },
       bankTransferId:{type: String, default: "" },
       cashDenominations:{type: String, default: "" },
-      receiverName:{type: String, default: "" }, // New field to capture relationship to the child
+      receiverName:{type: String, default: "" }, 
       date: { type: Date, default: Date.now }
     }
   ]

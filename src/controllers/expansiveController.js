@@ -91,7 +91,7 @@ exports.updateExpansive = async (req, res) => {
     }
   };
   
-  // Add a new category
+ 
   exports.addCategory = async (req, res) => {
     try {
       const { name } = req.body;
@@ -104,7 +104,7 @@ exports.updateExpansive = async (req, res) => {
     }
   };
   
-  // Update an existing category
+  
   exports.updateCategory = async (req, res) => {
     try {
       const { id } = req.params;
@@ -120,7 +120,7 @@ exports.updateExpansive = async (req, res) => {
     }
   };
   
-  // Delete a category
+  
   exports.deleteCategory = async (req, res) => {
     try {
       const { id } = req.params;

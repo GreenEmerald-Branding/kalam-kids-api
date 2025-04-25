@@ -270,7 +270,7 @@ exports.submitStudent = /*#__PURE__*/function () {
 }();
 exports.getCounts = /*#__PURE__*/function () {
   var _ref6 = (0, _asyncToGenerator2["default"])(/*#__PURE__*/_regenerator["default"].mark(function _callee6(req, res) {
-    var studentCount, formCount, approvedFormCount;
+    var studentCount, formCount, approvedFormCount, totalCollectedFees, totalCollected, totalFeeAmount, overallFeeAmount;
     return _regenerator["default"].wrap(function _callee6$(_context6) {
       while (1) switch (_context6.prev = _context6.next) {
         case 0:
@@ -289,29 +289,63 @@ exports.getCounts = /*#__PURE__*/function () {
           });
         case 9:
           approvedFormCount = _context6.sent;
+          _context6.next = 12;
+          return Form.aggregate([{
+            $group: {
+              _id: null,
+              // Grouping by null to get a single result
+              total: {
+                $sum: {
+                  $ifNull: ["$paidFee", 0]
+                }
+              } // Sum the paidFee field, defaulting to 0 if null
+            }
+          }]);
+        case 12:
+          totalCollectedFees = _context6.sent;
+          totalCollected = totalCollectedFees.length > 0 ? totalCollectedFees[0].total : 0; // Get the total amount or default to 0
+          // Calculate the overall fee amount of all forms
+          _context6.next = 16;
+          return Form.aggregate([{
+            $group: {
+              _id: null,
+              // Grouping by null to get a single result
+              total: {
+                $sum: {
+                  $ifNull: ["$feeAmount", 0]
+                }
+              } // Sum the feeAmount field, defaulting to 0 if null
+            }
+          }]);
+        case 16:
+          totalFeeAmount = _context6.sent;
+          overallFeeAmount = totalFeeAmount.length > 0 ? totalFeeAmount[0].total : 0; // Get the total fee amount or default to 0
           res.status(200).json({
             success: true,
             data: {
               students: studentCount,
               forms: formCount,
-              aproveForms: approvedFormCount
+              approvedForms: approvedFormCount,
+              totalCollectedFees: totalCollected,
+              // Include the total collected fees in the response
+              overallFeeAmount: overallFeeAmount // Include the overall fee amount of all forms
             }
           });
-          _context6.next = 17;
+          _context6.next = 25;
           break;
-        case 13:
-          _context6.prev = 13;
+        case 21:
+          _context6.prev = 21;
           _context6.t0 = _context6["catch"](0);
           console.error("Error getting counts:", _context6.t0.message);
           res.status(500).json({
             success: false,
             message: "Failed to get counts"
           });
-        case 17:
+        case 25:
         case "end":
           return _context6.stop();
       }
-    }, _callee6, null, [[0, 13]]);
+    }, _callee6, null, [[0, 21]]);
   }));
   return function (_x11, _x12) {
     return _ref6.apply(this, arguments);

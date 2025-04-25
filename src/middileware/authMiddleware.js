@@ -13,7 +13,7 @@ const authMiddleware = (roles = []) => {
         return res.status(403).json({ success: false, message: 'Forbidden' });
       }
 
-      req.user = decoded; // Save user info to request
+      req.user = decoded; 
       if (roles.length && !roles.includes(decoded.role)) {
         return res.status(403).json({ success: false, message: 'Forbidden' });
       }

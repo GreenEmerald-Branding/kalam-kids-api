@@ -105,14 +105,40 @@ exports.getCounts = async (req, res) => {
   try {
     const studentCount = await Student.countDocuments();
     const formCount = await Form.countDocuments();
-    
     const approvedFormCount = await Form.countDocuments({ isApproved: true });
+
+    // Calculate the total amount of fees collected
+    const totalCollectedFees = await Form.aggregate([
+      {
+        $group: {
+          _id: null, // Grouping by null to get a single result
+          total: { $sum: { $ifNull: ["$paidFee", 0] } } // Sum the paidFee field, defaulting to 0 if null
+        }
+      }
+    ]);
+
+    const totalCollected = totalCollectedFees.length > 0 ? totalCollectedFees[0].total : 0; // Get the total amount or default to 0
+
+    // Calculate the overall fee amount of all forms
+    const totalFeeAmount = await Form.aggregate([
+      {
+        $group: {
+          _id: null, // Grouping by null to get a single result
+          total: { $sum: { $ifNull: ["$feeAmount", 0] } } // Sum the feeAmount field, defaulting to 0 if null
+        }
+      }
+    ]);
+
+    const overallFeeAmount = totalFeeAmount.length > 0 ? totalFeeAmount[0].total : 0; // Get the total fee amount or default to 0
+
     res.status(200).json({
       success: true,
       data: {
         students: studentCount,
         forms: formCount,
-        aproveForms: approvedFormCount
+        approvedForms: approvedFormCount,
+        totalCollectedFees: totalCollected, // Include the total collected fees in the response
+        overallFeeAmount // Include the overall fee amount of all forms
       }
     });
   } catch (error) {
