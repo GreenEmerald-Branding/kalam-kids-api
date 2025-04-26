@@ -2,6 +2,7 @@ const Form = require("../module/formModel");
 const Student = require("../module/sutdent"); // Corrected the typo
 // const { sendEmail } = require('../mailer'); 
 const { sendInquiryEmail, sendAdmissionApprovalEmail } = require('../mailer');
+const expansive = require("../module/expansive");
  
   // Adjust the path as necessary
 // Adjust the path as necessary
@@ -409,7 +410,7 @@ exports.getAllPayments = async (req, res) => {
           date: payment.date,
           feeAmount: form.feeAmount,
           paidFee: totalPaidFee, // Set total paid fee up to this payment
-          remaining, // Include remaining amount for this payment
+          remaining,  
           amountInWords: payment.amountInWords,
           cashReceivedFrom: payment.cashReceivedFrom,
           relationshipName: payment.relationshipName,
@@ -466,16 +467,24 @@ exports.getPaymentHistory = async (req, res) => {
 };
 exports.getOverallPayment = async (req, res) => {
   try {
+    // Fetch all forms and calculate total paid fees
     const forms = await Form.find({});
-    
-    // Calculate the total amount paid
     const totalPaid = forms.reduce((acc, form) => {
-      return acc + (form.paidFee || 0); // Accumulate the paid fee
+      return acc + (form.paidFee || 0);
     }, 0);
+
+    // Fetch all expansive records and calculate total amount
+    const expansives = await expansive.find({});
+    const totalExpansiveAmount = expansives.reduce((acc, exp) => {
+      return acc + (exp.amount || 0);
+    }, 0);
+ 
+    const adjustedTotalPaid = totalPaid - totalExpansiveAmount;
 
     res.status(200).json({
       success: true,
-      totalPaid,
+      BalanceAmount: adjustedTotalPaid, 
+      totalPaid: totalPaid,
     });
   } catch (error) {
     console.error("Error fetching overall payment:", error.message);

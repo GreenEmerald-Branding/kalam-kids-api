@@ -10,6 +10,11 @@ const expansiveSchema = new mongoose.Schema(
     amountInWords: { type: String, required: true },
     approved: { type: Boolean, default: false },
     invoiceNo: { type: String, unique: true },
+    approvedAmount: {
+      type: Number,
+      default: 0, // Default value for approved amount
+  },
+
     chequeDetails: { type: String, default: "" },
     category: {
       type: String,
