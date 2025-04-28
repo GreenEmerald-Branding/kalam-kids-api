@@ -12,7 +12,7 @@ const expansiveSchema = new mongoose.Schema(
     invoiceNo: { type: String, unique: true },
     approvedAmount: {
       type: Number,
-      default: 0, // Default value for approved amount
+      default: 0, 
   },
 
     chequeDetails: { type: String, default: "" },

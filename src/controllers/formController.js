@@ -102,51 +102,7 @@ exports.submitStudent = async (req, res) => {
     res.status(500).json({ success: false, message: "Submission failed", error: error.message });
   }
 };
-exports.getCounts = async (req, res) => {
-  try {
-    const studentCount = await Student.countDocuments();
-    const formCount = await Form.countDocuments();
-    const approvedFormCount = await Form.countDocuments({ isApproved: true });
 
-    // Calculate the total amount of fees collected
-    const totalCollectedFees = await Form.aggregate([
-      {
-        $group: {
-          _id: null, // Grouping by null to get a single result
-          total: { $sum: { $ifNull: ["$paidFee", 0] } } // Sum the paidFee field, defaulting to 0 if null
-        }
-      }
-    ]);
-
-    const totalCollected = totalCollectedFees.length > 0 ? totalCollectedFees[0].total : 0; // Get the total amount or default to 0
-
-    // Calculate the overall fee amount of all forms
-    const totalFeeAmount = await Form.aggregate([
-      {
-        $group: {
-          _id: null, // Grouping by null to get a single result
-          total: { $sum: { $ifNull: ["$feeAmount", 0] } } // Sum the feeAmount field, defaulting to 0 if null
-        }
-      }
-    ]);
-
-    const overallFeeAmount = totalFeeAmount.length > 0 ? totalFeeAmount[0].total : 0; // Get the total fee amount or default to 0
-
-    res.status(200).json({
-      success: true,
-      data: {
-        students: studentCount,
-        forms: formCount,
-        approvedForms: approvedFormCount,
-        totalCollectedFees: totalCollected, // Include the total collected fees in the response
-        overallFeeAmount // Include the overall fee amount of all forms
-      }
-    });
-  } catch (error) {
-    console.error("Error getting counts:", error.message);
-    res.status(500).json({ success: false, message: "Failed to get counts" });
-  }
-};
 
 exports.getStudentById = async (req, res) => {
   try {
@@ -476,7 +432,7 @@ exports.getOverallPayment = async (req, res) => {
     // Fetch all expansive records and calculate total amount
     const expansives = await expansive.find({});
     const totalExpansiveAmount = expansives.reduce((acc, exp) => {
-      return acc + (exp.amount || 0);
+      return acc + (exp.approvedAmount || 0);
     }, 0);
  
     const adjustedTotalPaid = totalPaid - totalExpansiveAmount;
@@ -489,5 +445,99 @@ exports.getOverallPayment = async (req, res) => {
   } catch (error) {
     console.error("Error fetching overall payment:", error.message);
     res.status(500).json({ success: false, message: "Failed to fetch overall payment" });
+  }
+};
+exports.getCounts = async (req, res) => {
+  try {
+    const studentCount = await Student.countDocuments();
+    const formCount = await Form.countDocuments();
+    const approvedFormCount = await Form.countDocuments({ isApproved: true });
+    const forms = await Form.find({});
+    // Calculate the total amount of fees collected
+    const totalCollectedFees = await Form.aggregate([
+      {
+        $group: {
+          _id: null, // Grouping by null to get a single result
+          total: { $sum: { $ifNull: ["$paidFee", 0] } } // Sum the paidFee field, defaulting to 0 if null
+        }
+      }
+    ]);
+
+    const totalCollected = totalCollectedFees.length > 0 ? totalCollectedFees[0].total : 0; // Get the total amount or default to 0
+
+    // Calculate the overall fee amount of all forms
+    const totalFeeAmount = await Form.aggregate([
+      {
+        $group: {
+          _id: null, // Grouping by null to get a single result
+          total: { $sum: { $ifNull: ["$feeAmount", 0] } } // Sum the feeAmount field, defaulting to 0 if null
+        }
+      }
+    ]);
+
+    const overallFeeAmount = totalFeeAmount.length > 0 ? totalFeeAmount[0].total : 0; // Get the total fee amount or default to 0
+    const totalPaid = forms.reduce((acc, form) => {
+      return acc + (form.paidFee || 0);
+    }, 0);
+
+    // Fetch all expansive records and calculate total amount
+    const expansives = await expansive.find({});
+    const totalExpansiveAmount = expansives.reduce((acc, exp) => {
+      return acc + (exp.approvedAmount || 0);
+    }, 0);
+ 
+    const adjustedTotalPaid = totalPaid - totalExpansiveAmount;
+    res.status(200).json({
+      success: true,
+      data: {
+        students: studentCount,
+        forms: formCount,
+        approvedForms: approvedFormCount,
+        totalCollectedFees: totalCollected, // Include the total collected fees in the response
+        overallFeeAmount,
+        BalanceAmount: adjustedTotalPaid, 
+        totalPaid: totalPaid,
+        totalExpansiveAmount
+      // Include the overall fee amount of all forms
+      }
+    });
+  } catch (error) {
+    console.error("Error getting counts:", error.message);
+    res.status(500).json({ success: false, message: "Failed to get counts" });
+  }
+};
+exports.promoteForm = async (req, res) => {
+  try {
+    const { id } = req.params; // Get the form ID from the request parameters
+    const { newClass, newFeeAmount } = req.body; // Get the new class and fee amount from the request body
+
+    // Validate the input
+    if (!newClass || !newFeeAmount) {
+      return res.status(400).json({ success: false, message: "New class and fee amount are required." });
+    }
+
+    // Find the existing form
+    const existingForm = await Form.findById(id);
+    if (!existingForm) {
+      return res.status(404).json({ success: false, message: "Form not found." });
+    }
+
+    // Create a new form with duplicated admissionFor and feeAmount
+    const newForm = new Form({
+      ...existingForm.toObject(), // Copy existing form data
+      admissionFor: newClass, // Update admissionFor
+      feeAmount: newFeeAmount, // Update feeAmount
+      _id: undefined, // Ensure a new ID is created
+      createdAt: undefined, // Reset timestamps
+      updatedAt: undefined,
+    });
+
+    // Save the new form
+    await newForm.save();
+
+    res.status(201).json({ success: true, message: "Form promoted successfully.", data: newForm });
+  } catch (error) {
+    console.error("Error promoting form:", error.message);
+    res.status(500).json({ success: false, message: "Failed to promote form." });
   }
 };

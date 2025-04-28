@@ -108,7 +108,7 @@ exports.deleteCategory = async (req, res) => {
 exports.approveExpansive = async (req, res) => {
   try {
     const { id } = req.params; // Get the ID from the request parameters
-
+    const { amount } = req.body;
     // Find the expansive record by ID
     const expansiveRecord = await expansive.findById(id);
     if (!expansiveRecord) {
@@ -135,6 +135,7 @@ exports.approveExpansive = async (req, res) => {
 
     // Update the expansive record to set approved to true and generate a new invoice number
     expansiveRecord.approved = true;
+    expansiveRecord.approvedAmount = amount;
     expansiveRecord.invoiceNo = `VR-${String(lastNumber + 1).padStart(6, "0")}`; // Generate new invoice number
 
     // Save the updated record
