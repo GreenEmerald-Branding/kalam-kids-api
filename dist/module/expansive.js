@@ -36,6 +36,10 @@ var expansiveSchema = new mongoose.Schema((0, _defineProperty2["default"])((0, _
     type: String,
     unique: true
   },
+  approvedAmount: {
+    type: Number,
+    "default": 0
+  },
   chequeDetails: {
     type: String,
     "default": ""

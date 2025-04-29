@@ -527,6 +527,8 @@ exports.promoteForm = async (req, res) => {
       ...existingForm.toObject(), // Copy existing form data
       admissionFor: newClass, // Update admissionFor
       feeAmount: newFeeAmount, // Update feeAmount
+      paidFee: 0, // Reset paidFee to 0
+      feePayments: [], // Reset feePayments to an empty array
       _id: undefined, // Ensure a new ID is created
       createdAt: undefined, // Reset timestamps
       updatedAt: undefined,

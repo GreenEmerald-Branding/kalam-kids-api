@@ -3,30 +3,28 @@
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
 var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
-// const expansive = require('../module/expansive');
 var expansive = require('../module/expansive');
 var Category = require("../module/Category");
 exports.submitExpansive = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])(/*#__PURE__*/_regenerator["default"].mark(function _callee(req, res) {
-    var ExpansiveData, newExpansive;
+    var newExpansive;
     return _regenerator["default"].wrap(function _callee$(_context) {
       while (1) switch (_context.prev = _context.next) {
         case 0:
           _context.prev = 0;
-          ExpansiveData = req.body; // Create a new payment instance
-          newExpansive = new expansive(ExpansiveData); // Save to the database
-          _context.next = 5;
+          newExpansive = new expansive(req.body);
+          _context.next = 4;
           return newExpansive.save();
-        case 5:
+        case 4:
           res.status(201).json({
             success: true,
             message: "Payment submitted successfully",
             data: newExpansive
           });
-          _context.next = 12;
+          _context.next = 11;
           break;
-        case 8:
-          _context.prev = 8;
+        case 7:
+          _context.prev = 7;
           _context.t0 = _context["catch"](0);
           console.error("Error saving payment:", _context.t0.message);
           res.status(500).json({
@@ -34,11 +32,11 @@ exports.submitExpansive = /*#__PURE__*/function () {
             message: "Failed to save payment",
             error: _context.t0.message
           });
-        case 12:
+        case 11:
         case "end":
           return _context.stop();
       }
-    }, _callee, null, [[0, 8]]);
+    }, _callee, null, [[0, 7]]);
   }));
   return function (_x, _x2) {
     return _ref.apply(this, arguments);
@@ -81,62 +79,38 @@ exports.getAllExpansive = /*#__PURE__*/function () {
 }();
 exports.updateExpansive = /*#__PURE__*/function () {
   var _ref3 = (0, _asyncToGenerator2["default"])(/*#__PURE__*/_regenerator["default"].mark(function _callee3(req, res) {
-    var id, updatedData, lastOrder, lastNumber, numberPart, updatedExpansive;
+    var id, updatedData, updatedExpansive;
     return _regenerator["default"].wrap(function _callee3$(_context3) {
       while (1) switch (_context3.prev = _context3.next) {
         case 0:
           _context3.prev = 0;
           id = req.params.id; // Get the ID from the request parameters
           updatedData = req.body; // Get the updated data from the request body
-          // Check if the record is being approved
-          if (!updatedData.approved) {
-            _context3.next = 10;
-            break;
-          }
-          _context3.next = 6;
-          return expansive.find({
-            invoiceNo: {
-              $regex: /^VR-\d{6}$/
-            }
-          }).sort({
-            invoiceNo: -1
-          }) // Sort invoiceNo descending
-          .limit(1);
-        case 6:
-          lastOrder = _context3.sent;
-          lastNumber = 1080; // Default starting number
-          if (lastOrder.length > 0) {
-            numberPart = parseInt(lastOrder[0].invoiceNo.split("-")[1]);
-            if (!isNaN(numberPart)) {
-              lastNumber = numberPart;
-            }
-          }
-          updatedData.invoiceNo = "VR-".concat(String(lastNumber + 1).padStart(6, "0")); // Generate new invoice number
-        case 10:
-          _context3.next = 12;
+          // Find the expansive record by ID and update it
+          _context3.next = 5;
           return expansive.findByIdAndUpdate(id, updatedData, {
             "new": true
           });
-        case 12:
+        case 5:
           updatedExpansive = _context3.sent;
           if (updatedExpansive) {
-            _context3.next = 15;
+            _context3.next = 8;
             break;
           }
           return _context3.abrupt("return", res.status(404).json({
             success: false,
             message: "Expansive not found"
           }));
-        case 15:
+        case 8:
           res.status(200).json({
             success: true,
             message: "Expansive updated successfully",
             data: updatedExpansive
           });
-          _context3.next = 22;
+          _context3.next = 15;
           break;
-        case 18:
-          _context3.prev = 18;
+        case 11:
+          _context3.prev = 11;
           _context3.t0 = _context3["catch"](0);
           console.error("Error updating expansive:", _context3.t0.message);
           res.status(500).json({
@@ -144,11 +118,11 @@ exports.updateExpansive = /*#__PURE__*/function () {
             message: "Failed to update expansive",
             error: _context3.t0.message
           });
-        case 22:
+        case 15:
         case "end":
           return _context3.stop();
       }
-    }, _callee3, null, [[0, 18]]);
+    }, _callee3, null, [[0, 11]]);
   }));
   return function (_x5, _x6) {
     return _ref3.apply(this, arguments);
@@ -162,7 +136,6 @@ exports.deleteExpansive = /*#__PURE__*/function () {
         case 0:
           _context4.prev = 0;
           id = req.params.id; // Get the ID from the request parameters
-          // Find the expansive record by ID and delete it
           _context4.next = 4;
           return expansive.findByIdAndDelete(id);
         case 4:
@@ -357,7 +330,8 @@ exports.deleteCategory = /*#__PURE__*/function () {
           console.error("Error deleting category:", _context8.t0.message);
           res.status(500).json({
             success: false,
-            message: "Failed to delete category"
+            message: "Failed to delete category",
+            error: _context8.t0.message
           });
         case 14:
         case "end":
@@ -367,5 +341,90 @@ exports.deleteCategory = /*#__PURE__*/function () {
   }));
   return function (_x15, _x16) {
     return _ref8.apply(this, arguments);
+  };
+}();
+exports.approveExpansive = /*#__PURE__*/function () {
+  var _ref9 = (0, _asyncToGenerator2["default"])(/*#__PURE__*/_regenerator["default"].mark(function _callee9(req, res) {
+    var id, amount, expansiveRecord, lastOrder, lastNumber, numberPart;
+    return _regenerator["default"].wrap(function _callee9$(_context9) {
+      while (1) switch (_context9.prev = _context9.next) {
+        case 0:
+          _context9.prev = 0;
+          id = req.params.id; // Get the ID from the request parameters
+          amount = req.body.amount; // Find the expansive record by ID
+          _context9.next = 5;
+          return expansive.findById(id);
+        case 5:
+          expansiveRecord = _context9.sent;
+          if (expansiveRecord) {
+            _context9.next = 8;
+            break;
+          }
+          return _context9.abrupt("return", res.status(404).json({
+            success: false,
+            message: "Expansive not found"
+          }));
+        case 8:
+          if (!expansiveRecord.approved) {
+            _context9.next = 10;
+            break;
+          }
+          return _context9.abrupt("return", res.status(400).json({
+            success: false,
+            message: "Expansive is already approved"
+          }));
+        case 10:
+          _context9.next = 12;
+          return expansive.find({
+            invoiceNo: {
+              $regex: /^VR-\d{6}$/
+            }
+          }).sort({
+            invoiceNo: -1
+          }) // Sort invoiceNo descending
+          .limit(1);
+        case 12:
+          lastOrder = _context9.sent;
+          lastNumber = 1080; // Default starting number
+          if (lastOrder.length > 0) {
+            numberPart = parseInt(lastOrder[0].invoiceNo.split("-")[1]);
+            if (!isNaN(numberPart)) {
+              lastNumber = numberPart;
+            }
+          }
+
+          // Update the expansive record to set approved to true and generate a new invoice number
+          expansiveRecord.approved = true;
+          expansiveRecord.approvedAmount = amount;
+          expansiveRecord.invoiceNo = "VR-".concat(String(lastNumber + 1).padStart(6, "0")); // Generate new invoice number
+
+          // Save the updated record
+          _context9.next = 20;
+          return expansiveRecord.save();
+        case 20:
+          res.status(200).json({
+            success: true,
+            message: "Expansive approved successfully",
+            data: expansiveRecord
+          });
+          _context9.next = 27;
+          break;
+        case 23:
+          _context9.prev = 23;
+          _context9.t0 = _context9["catch"](0);
+          console.error("Error approving expansive:", _context9.t0.message);
+          res.status(500).json({
+            success: false,
+            message: "Failed to approve expansive",
+            error: _context9.t0.message
+          });
+        case 27:
+        case "end":
+          return _context9.stop();
+      }
+    }, _callee9, null, [[0, 23]]);
+  }));
+  return function (_x17, _x18) {
+    return _ref9.apply(this, arguments);
   };
 }();
