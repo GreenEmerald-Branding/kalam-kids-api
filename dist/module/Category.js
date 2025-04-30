@@ -6,8 +6,6 @@ var categorySchema = new mongoose.Schema({
     type: String,
     required: true
   }
-}, {
-  timestamps: true
 });
 var Category = mongoose.model("Category", categorySchema);
 module.exports = Category;

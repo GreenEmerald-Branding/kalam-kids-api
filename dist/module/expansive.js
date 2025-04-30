@@ -1,9 +1,7 @@
 "use strict";
 
-var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
-var _defineProperty2 = _interopRequireDefault(require("@babel/runtime/helpers/defineProperty"));
 var mongoose = require("mongoose");
-var expansiveSchema = new mongoose.Schema((0, _defineProperty2["default"])((0, _defineProperty2["default"])((0, _defineProperty2["default"])((0, _defineProperty2["default"])((0, _defineProperty2["default"])((0, _defineProperty2["default"])({
+var expansiveSchema = new mongoose.Schema({
   payeeName: {
     type: String,
     required: true
@@ -16,10 +14,7 @@ var expansiveSchema = new mongoose.Schema((0, _defineProperty2["default"])((0, _
     type: String,
     required: true
   },
-  category: {
-    type: String,
-    required: true
-  },
+  // category: { type: String, required: true },
   amount: {
     type: Number,
     required: true
@@ -33,8 +28,7 @@ var expansiveSchema = new mongoose.Schema((0, _defineProperty2["default"])((0, _
     "default": false
   },
   invoiceNo: {
-    type: String,
-    unique: true
+    type: String
   },
   approvedAmount: {
     type: Number,
@@ -43,25 +37,28 @@ var expansiveSchema = new mongoose.Schema((0, _defineProperty2["default"])((0, _
   chequeDetails: {
     type: String,
     "default": ""
+  },
+  category: {
+    type: String
+  },
+  paymentMode: {
+    type: String
+  },
+  qrTransactionId: {
+    type: String,
+    "default": ""
+  },
+  bankTransferId: {
+    type: String,
+    "default": ""
+  },
+  cashDenominations: {
+    type: String,
+    "default": ""
+  },
+  AccountentName: {
+    type: String,
+    "default": ""
   }
-}, "category", {
-  type: String,
-  required: true
-}), "paymentMode", {
-  type: String
-}), "qrTransactionId", {
-  type: String,
-  "default": ""
-}), "bankTransferId", {
-  type: String,
-  "default": ""
-}), "cashDenominations", {
-  type: String,
-  "default": ""
-}), "AccountentName", {
-  type: String,
-  "default": ""
-}), {
-  timestamps: true
 });
 module.exports = mongoose.model("expansive", expansiveSchema);

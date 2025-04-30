@@ -784,7 +784,6 @@ exports.getAllPayments = /*#__PURE__*/function () {
                 date: payment.date,
                 feeAmount: form.feeAmount,
                 paidFee: totalPaidFee,
-                // Set total paid fee up to this payment
                 remaining: remaining,
                 amountInWords: payment.amountInWords,
                 cashReceivedFrom: payment.cashReceivedFrom,

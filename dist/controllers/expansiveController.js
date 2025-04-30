@@ -396,7 +396,7 @@ exports.approveExpansive = /*#__PURE__*/function () {
           // Update the expansive record to set approved to true and generate a new invoice number
           expansiveRecord.approved = true;
           expansiveRecord.approvedAmount = amount;
-          expansiveRecord.invoiceNo = "VR-".concat(String(lastNumber + 1).padStart(6, "0")); // Generate new invoice number
+          expansiveRecord.invoiceNo = "VR-".concat(String(lastNumber + 1).padStart(6, "0"));
 
           // Save the updated record
           _context9.next = 20;

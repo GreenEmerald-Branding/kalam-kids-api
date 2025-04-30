@@ -136,7 +136,7 @@ exports.approveExpansive = async (req, res) => {
     // Update the expansive record to set approved to true and generate a new invoice number
     expansiveRecord.approved = true;
     expansiveRecord.approvedAmount = amount;
-    expansiveRecord.invoiceNo = `VR-${String(lastNumber + 1).padStart(6, "0")}`; // Generate new invoice number
+    expansiveRecord.invoiceNo = `VR-${String(lastNumber + 1).padStart(6, "0")}`;  
 
     // Save the updated record
     await expansiveRecord.save();

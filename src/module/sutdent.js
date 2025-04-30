@@ -17,6 +17,7 @@ const studentSchema = new mongoose.Schema({
   plotNo: { type: String },
   street: { type: String }, 
   landmark: { type: String },
+  
 }, { timestamps: true }); 
 
 module.exports = mongoose.model("Student", studentSchema);

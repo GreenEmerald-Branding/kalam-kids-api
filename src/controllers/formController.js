@@ -129,7 +129,7 @@ exports.getAllStudents = async (req, res) => {
     res.status(500).json({ success: false, message: "Failed to fetch students" });
   }
 };
-exports.deleteStudent = async (req, res) => {
+exports.  deleteStudent = async (req, res) => {
   try {
     const { id } = req.params;
     const student = await Student.findByIdAndDelete(id);
@@ -365,7 +365,7 @@ exports.getAllPayments = async (req, res) => {
           paidBy: payment.paidBy,
           date: payment.date,
           feeAmount: form.feeAmount,
-          paidFee: totalPaidFee, // Set total paid fee up to this payment
+          paidFee: totalPaidFee, 
           remaining,  
           amountInWords: payment.amountInWords,
           cashReceivedFrom: payment.cashReceivedFrom,
