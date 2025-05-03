@@ -25,6 +25,7 @@ const expansiveSchema = new mongoose.Schema({
   cashDenominations: { type: String, default: "" },
   AccountentName: { type: String, default: "" },
   billNo: { type: String, default: "" },
+  approvalDate: { type: Date }
 
 });
 

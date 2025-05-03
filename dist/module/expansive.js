@@ -14,7 +14,6 @@ var expansiveSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  // category: { type: String, required: true },
   amount: {
     type: Number,
     required: true
@@ -28,7 +27,9 @@ var expansiveSchema = new mongoose.Schema({
     "default": false
   },
   invoiceNo: {
-    type: String
+    type: String,
+    unique: true,
+    sparse: true // <== THIS IS IMPORTANT
   },
   approvedAmount: {
     type: Number,
@@ -59,6 +60,13 @@ var expansiveSchema = new mongoose.Schema({
   AccountentName: {
     type: String,
     "default": ""
+  },
+  billNo: {
+    type: String,
+    "default": ""
+  },
+  approvalDate: {
+    type: Date
   }
 });
 module.exports = mongoose.model("expansive", expansiveSchema);

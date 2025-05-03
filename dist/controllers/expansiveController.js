@@ -393,24 +393,25 @@ exports.approveExpansive = /*#__PURE__*/function () {
             }
           }
 
-          // Update the expansive record to set approved to true and generate a new invoice number
+          // Update the expansive record to set approved to true, generate a new invoice number, and set the approval date
           expansiveRecord.approved = true;
           expansiveRecord.approvedAmount = amount;
           expansiveRecord.invoiceNo = "VR-".concat(String(lastNumber + 1).padStart(6, "0"));
+          expansiveRecord.approvalDate = new Date(); // Set the current date as the approval date
 
           // Save the updated record
-          _context9.next = 20;
+          _context9.next = 21;
           return expansiveRecord.save();
-        case 20:
+        case 21:
           res.status(200).json({
             success: true,
             message: "Expansive approved successfully",
             data: expansiveRecord
           });
-          _context9.next = 27;
+          _context9.next = 28;
           break;
-        case 23:
-          _context9.prev = 23;
+        case 24:
+          _context9.prev = 24;
           _context9.t0 = _context9["catch"](0);
           console.error("Error approving expansive:", _context9.t0.message);
           res.status(500).json({
@@ -418,11 +419,11 @@ exports.approveExpansive = /*#__PURE__*/function () {
             message: "Failed to approve expansive",
             error: _context9.t0.message
           });
-        case 27:
+        case 28:
         case "end":
           return _context9.stop();
       }
-    }, _callee9, null, [[0, 23]]);
+    }, _callee9, null, [[0, 24]]);
   }));
   return function (_x17, _x18) {
     return _ref9.apply(this, arguments);

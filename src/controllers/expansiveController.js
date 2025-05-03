@@ -106,44 +106,47 @@ exports.deleteCategory = async (req, res) => {
     }
 };
 exports.approveExpansive = async (req, res) => {
-  try {
-    const { id } = req.params; // Get the ID from the request parameters
-    const { amount } = req.body;
-    // Find the expansive record by ID
-    const expansiveRecord = await expansive.findById(id);
-    if (!expansiveRecord) {
-      return res.status(404).json({ success: false, message: "Expansive not found" });
-    }
-
-    // Check if the record is already approved
-    if (expansiveRecord.approved) {
-      return res.status(400).json({ success: false, message: "Expansive is already approved" });
-    }
-
-    // Generate new invoice number
-    const lastOrder = await expansive.find({ invoiceNo: { $regex: /^VR-\d{6}$/ } })
-      .sort({ invoiceNo: -1 }) // Sort invoiceNo descending
-      .limit(1);
-
-    let lastNumber = 1080; // Default starting number
-    if (lastOrder.length > 0) {
-      const numberPart = parseInt(lastOrder[0].invoiceNo.split("-")[1]);
-      if (!isNaN(numberPart)) {
-        lastNumber = numberPart;
+    try {
+      const { id } = req.params; // Get the ID from the request parameters
+      const { amount } = req.body;
+  
+      // Find the expansive record by ID
+      const expansiveRecord = await expansive.findById(id);
+      if (!expansiveRecord) {
+        return res.status(404).json({ success: false, message: "Expansive not found" });
       }
+  
+      // Check if the record is already approved
+      if (expansiveRecord.approved) {
+        return res.status(400).json({ success: false, message: "Expansive is already approved" });
+      }
+  
+      // Generate new invoice number
+      const lastOrder = await expansive.find({ invoiceNo: { $regex: /^VR-\d{6}$/ } })
+        .sort({ invoiceNo: -1 }) // Sort invoiceNo descending
+        .limit(1);
+  
+      let lastNumber = 1080; // Default starting number
+      if (lastOrder.length > 0) {
+        const numberPart = parseInt(lastOrder[0].invoiceNo.split("-")[1]);
+        if (!isNaN(numberPart)) {
+          lastNumber = numberPart;
+        }
+      }
+  
+      // Update the expansive record to set approved to true, generate a new invoice number, and set the approval date
+      expansiveRecord.approved = true;
+      expansiveRecord.approvedAmount = amount;
+      expansiveRecord.invoiceNo = `VR-${String(lastNumber + 1).padStart(6, "0")}`;
+      expansiveRecord.approvalDate = new Date(); // Set the current date as the approval date
+  
+      // Save the updated record
+      await expansiveRecord.save();
+  
+      res.status(200).json({ success: true, message: "Expansive approved successfully", data: expansiveRecord });
+    } catch (error) {
+      console.error("Error approving expansive:", error.message);
+      res.status(500).json({ success: false, message: "Failed to approve expansive", error: error.message });
     }
-
-    // Update the expansive record to set approved to true and generate a new invoice number
-    expansiveRecord.approved = true;
-    expansiveRecord.approvedAmount = amount;
-    expansiveRecord.invoiceNo = `VR-${String(lastNumber + 1).padStart(6, "0")}`;  
-
-    // Save the updated record
-    await expansiveRecord.save();
-
-    res.status(200).json({ success: true, message: "Expansive approved successfully", data: expansiveRecord });
-  } catch (error) {
-    console.error("Error approving expansive:", error.message);
-    res.status(500).json({ success: false, message: "Failed to approve expansive", error: error.message });
-  }
-};
+  };
+  
