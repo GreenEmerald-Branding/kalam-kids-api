@@ -17,7 +17,6 @@ const authMiddleware = (roles = []) => {
       if (roles.length && !roles.includes(decoded.role)) {
         return res.status(403).json({ success: false, message: 'Forbidden' });
       }
-
       next();
     });
   };

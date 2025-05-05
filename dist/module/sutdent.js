@@ -55,7 +55,11 @@ var studentSchema = new mongoose.Schema({
   },
   landmark: {
     type: String
-  }
+  },
+  followUps: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'FollowUp'
+  }]
 }, {
   timestamps: true
 });

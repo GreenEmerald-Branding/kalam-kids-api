@@ -20,6 +20,9 @@ var _require = require("../controllers/formController"),
   getPaymentHistory = _require.getPaymentHistory,
   getOverallPayment = _require.getOverallPayment,
   promoteForm = _require.promoteForm;
+var _require2 = require("../controllers/followUpController"),
+  addFollowUp = _require2.addFollowUp,
+  getFollowUpsByEnquiryId = _require2.getFollowUpsByEnquiryId;
 router.post("/submit", submitForm);
 router.get("/form/:id", getFormById);
 router.get("/form", getAllForm);
@@ -37,4 +40,6 @@ router.get('/getbill', getAllPayments);
 router.get("/students/:id", getStudentById);
 router.get("/students", getAllStudents);
 router["delete"]('/enq/:id', deleteStudent);
+router.post('/follow-ups', addFollowUp);
+router.get('/follow-ups/:enquiryId', getFollowUpsByEnquiryId);
 module.exports = router;

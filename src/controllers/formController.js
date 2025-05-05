@@ -129,7 +129,7 @@ exports.getAllStudents = async (req, res) => {
     res.status(500).json({ success: false, message: "Failed to fetch students" });
   }
 };
-exports.  deleteStudent = async (req, res) => {
+exports.deleteStudent = async (req, res) => {
   try {
     const { id } = req.params;
     const student = await Student.findByIdAndDelete(id);
@@ -147,7 +147,7 @@ exports.  deleteStudent = async (req, res) => {
 exports.approveForm = async (req, res) => {
   try {
     const { id } = req.params;
-    const { feeAmount } = req.body; // Get fee amount from request body
+    const { feeAmount } = req.body;  
 
     // Validate fee amount
     if (!feeAmount || isNaN(feeAmount) || feeAmount <= 0) {
@@ -158,6 +158,7 @@ exports.approveForm = async (req, res) => {
     const lastOrder = await Form.find({ invoiceNo: { $regex: /^KSS-\d{6}$/ } })
       .sort({ invoiceNo: -1 }) // Sort invoiceNo descending
       .limit(1);
+
 
     let lastNumber = 700; // Default starting number
     if (lastOrder.length > 0) {
@@ -233,6 +234,7 @@ exports.getApprovedForms = async (req, res) => {
 
     if (approvedForms.length === 0) {
       return res.status(404).json({ success: false, message: "No approved forms found" });
+      return res.$exists(202).json({suc})
     }
 
     res.status(200).json({ success: true, data: approvedForms });

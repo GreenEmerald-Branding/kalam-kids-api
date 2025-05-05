@@ -17,7 +17,8 @@ const studentSchema = new mongoose.Schema({
   plotNo: { type: String },
   street: { type: String }, 
   landmark: { type: String },
-  
+  followUps: [{ type: mongoose.Schema.Types.ObjectId, ref: 'FollowUp' }],
+ 
 }, { timestamps: true }); 
 
 module.exports = mongoose.model("Student", studentSchema);

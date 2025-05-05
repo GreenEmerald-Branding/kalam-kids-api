@@ -402,8 +402,7 @@ exports.approveForm = /*#__PURE__*/function () {
         case 0:
           _context9.prev = 0;
           id = req.params.id;
-          feeAmount = req.body.feeAmount; // Get fee amount from request body
-          // Validate fee amount
+          feeAmount = req.body.feeAmount; // Validate fee amount
           if (!(!feeAmount || isNaN(feeAmount) || feeAmount <= 0)) {
             _context9.next = 5;
             break;
@@ -577,33 +576,33 @@ exports.getApprovedForms = /*#__PURE__*/function () {
         case 3:
           approvedForms = _context11.sent;
           if (!(approvedForms.length === 0)) {
-            _context11.next = 6;
+            _context11.next = 7;
             break;
           }
           return _context11.abrupt("return", res.status(404).json({
             success: false,
             message: "No approved forms found"
           }));
-        case 6:
+        case 7:
           res.status(200).json({
             success: true,
             data: approvedForms
           });
-          _context11.next = 13;
+          _context11.next = 14;
           break;
-        case 9:
-          _context11.prev = 9;
+        case 10:
+          _context11.prev = 10;
           _context11.t0 = _context11["catch"](0);
           console.error("Error fetching approved forms:", _context11.t0.message);
           res.status(500).json({
             success: false,
             message: "Failed to fetch approved forms"
           });
-        case 13:
+        case 14:
         case "end":
           return _context11.stop();
       }
-    }, _callee11, null, [[0, 9]]);
+    }, _callee11, null, [[0, 10]]);
   }));
   return function (_x21, _x22) {
     return _ref11.apply(this, arguments);
