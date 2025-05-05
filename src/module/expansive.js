@@ -10,7 +10,7 @@ const expansiveSchema = new mongoose.Schema({
    invoiceNo: {
         type: String,
         unique: true,
-        sparse: true // <== THIS IS IMPORTANT
+        sparse: true 
     },
   
   approvedAmount: {

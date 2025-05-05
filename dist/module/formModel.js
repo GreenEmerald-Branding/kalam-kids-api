@@ -303,7 +303,7 @@ var formSchema = new mongoose.Schema({
       type: String,
       "default": ""
     },
-    // base64 image
+    // base64 imag
     volunteerJob: {
       type: String,
       "default": false
