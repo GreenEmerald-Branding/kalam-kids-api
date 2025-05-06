@@ -94,7 +94,7 @@ const formSchema = new mongoose.Schema({
     signatureRef: { type: String, default: "" }, // base64 image
     date: { type: String, default: "" },
     acknowledgmentName: { type: String, default: "" },
-    acknowledgmentSignatureRef: { type: String, default: "" }, // base64 imag
+    acknowledgmentSignatureRef: { type: String, default: "" }, // base64 im
     volunteerJob: {type:String,  default: false },
     specialEventsCost: { type:String,  default: false },
     attendMeetings: { type:String,  default: false },
