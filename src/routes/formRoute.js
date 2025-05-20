@@ -1,11 +1,12 @@
 const express = require("express");
 const router = express.Router();
-const {   submitStudent, getStudentById, getAllStudents, submitForm, getFormById, getAllForm, deleteForm, deleteStudent, getCounts, approveForm, getApprovedForms, payForm, getPaymentsForForm, getAllPayments, getPaymentHistory, getOverallPayment, promoteForm, } = require("../controllers/formController");
+const {   submitStudent, getStudentById, getAllStudents, submitForm, getFormById, getAllForm, deleteForm, deleteStudent, getCounts, approveForm, getApprovedForms, payForm, getPaymentsForForm, getAllPayments, getPaymentHistory, getOverallPayment, promoteForm, updateForm, } = require("../controllers/formController");
 const { addFollowUp, getFollowUpsByEnquiryId } = require("../controllers/followUpController");
  
 
  
 router.post("/submit", submitForm);
+router.put("/update/:id", updateForm);
 router.get("/form/:id", getFormById);
 router.get("/form", getAllForm);
 router.put("/form/approve/:id", approveForm);

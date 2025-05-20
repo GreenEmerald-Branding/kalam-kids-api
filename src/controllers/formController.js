@@ -34,6 +34,30 @@ exports.submitForm = async (req, res) => {
     res.status(500).json({ success: false, message: "Failed to save form", error: error.message });
   }
 }
+exports.updateForm = async (req, res) => {
+  try {
+    const { id } = req.params; // Get the form ID from the request parameters
+    const updatedData = req.body; // Get the updated data from the request body
+
+    // Validate the input if necessary
+    if (!updatedData) {
+      return res.status(400).json({ success: false, message: "No data provided for update." });
+    }
+
+    // Find the existing form and update it
+    const form = await Form.findByIdAndUpdate(id, updatedData, { new: true });
+
+    if (!form) {
+      return res.status(404).json({ success: false, message: "Form not found." });
+    }
+
+    res.status(200).json({ success: true, message: "Form updated successfully.", data: form });
+  } catch (error) {
+    console.error("Error updating form:", error.message);
+    res.status(500).json({ success: false, message: "Failed to update form." });
+  }
+};
+
 exports.getFormById = async (req, res) => {
   try {
     const { id } = req.params;

@@ -19,11 +19,13 @@ var _require = require("../controllers/formController"),
   getAllPayments = _require.getAllPayments,
   getPaymentHistory = _require.getPaymentHistory,
   getOverallPayment = _require.getOverallPayment,
-  promoteForm = _require.promoteForm;
+  promoteForm = _require.promoteForm,
+  updateForm = _require.updateForm;
 var _require2 = require("../controllers/followUpController"),
   addFollowUp = _require2.addFollowUp,
   getFollowUpsByEnquiryId = _require2.getFollowUpsByEnquiryId;
 router.post("/submit", submitForm);
+router.put("/update/:id", updateForm);
 router.get("/form/:id", getFormById);
 router.get("/form", getAllForm);
 router.put("/form/approve/:id", approveForm);
