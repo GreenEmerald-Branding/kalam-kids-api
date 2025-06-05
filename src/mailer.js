@@ -88,6 +88,7 @@ const sendAdmissionApprovalEmail = async (to, studentData) => {
       to: to, // Parent's email
       subject: 'Admission Approval Notification',
       html: template,
+
     };
 
     // Send email to the parent
@@ -98,6 +99,53 @@ const sendAdmissionApprovalEmail = async (to, studentData) => {
     console.error("❌ Error sending admission approval email:", error);
   }
 };
+ 
+ 
+const sendEmail = async (to, subject, templatePath, replacements) => {
+  try {
+    // Read the HTML template
+    let template = fs.readFileSync(templatePath, 'utf8');
 
-module.exports = { sendInquiryEmail, sendAdmissionApprovalEmail };
+    // Replace placeholders with actual data
+    for (const [key, value] of Object.entries(replacements)) {
+      if (typeof value === 'object') {
+        // Handle nested objects
+        for (const [nestedKey, nestedValue] of Object.entries(value)) {
+          template = template.replace(new RegExp(`{{${key}.${nestedKey}}}`, 'g'), nestedValue);
+        }
+      } else {
+        template = template.replace(new RegExp(`{{${key}}}`, 'g'), value);
+      }
+    }
+
+    // Mail options
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: to,
+      subject: subject,
+      html: template,
+    };
+
+    // Send email
+    await transporter.sendMail(mailOptions);
+    console.log(`📧 Email sent to: ${to}`);
+  } catch (error) {
+    console.error("❌ Error sending email:", error);
+  }
+};
+
+const sendInquiryEmailToFather = async (to, studentData) => {
+  const templatePath = path.join(__dirname, "Templetes/fatherInquiryNotification.html");
+  await sendEmail(to, 'PAYMENT RECEIPT', templatePath, studentData);
+};
+
+const sendInquiryEmailToMother = async (to, studentData) => {
+  const templatePath = path.join(__dirname, "Templetes/motherInquiryNotification.html");
+  await sendEmail(to, 'PAYMENT RECEIPT', templatePath, studentData);
+};
+
+ 
+
+
+module.exports = { sendInquiryEmail, sendAdmissionApprovalEmail,sendInquiryEmailToFather, sendInquiryEmailToMother   };
  

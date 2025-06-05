@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Payment Receipt</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Segoe UI", sans-serif;
+      padding: 1rem;
+      margin: 0;
+      color: #222;
+      background-color: #f2f4f7;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background-color: #ffffff;
+      border-radius: 8px;
+      padding: 1.5rem;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .header {
+      text-align: center;
+      color: #16bab1;
+      font-weight: bold;
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .logo {
+      display: block;
+      margin: 0 auto 1rem auto;
+      width: 80px;
+    }
+
+    .section {
+      margin-bottom: 1.2rem;
+    }
+
+    .row {
+      margin-bottom: 0.75rem;
+    }
+
+    .label {
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: #16bab1;
+      margin-bottom: 0.25rem;
+    }
+
+    .value, .input {
+      background-color: #f1f5f9;
+      padding: 0.6rem 0.8rem;
+      border-radius: 5px;
+      font-size: 0.95rem;
+      border: 1px solid #ddd;
+      color: #333;
+      width: 100%;
+    }
+
+    .input[readonly] {
+      border: none;
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 2rem;
+    }
+
+    .site {
+      font-size: 0.95rem;
+      color: #16bab1;
+      margin-bottom: 0.8rem;
+    }
+
+    .print-btn {
+      background-color: #16bab1;
+      color: white;
+      border: none;
+      padding: 0.6rem 1.2rem;
+      font-size: 0.95rem;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    @media print {
+      .print-btn {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <p class="header">PAYMENT RECEIPT</p>
+      <img src="../assets/logo.png" alt="logo" class="logo" />
+
+
+    <div class="section">
+      <div class="row">
+        <div class="label">Payment ID</div>
+        <div class="value">{{paymentDetails._id}}</div>
+      </div>
+      <div class="row">
+        <div class="label">Date</div>
+        <div class="value">{{paymentDetails.date}}</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="row">
+        <div class="label">Received With</div>
+        <div class="value">{{paymentDetails.cashReceivedFrom}}</div>
+      </div>
+      <div class="row">
+        <div class="label">Relationship</div>
+        <div class="value">{{paymentDetails.relationshipName}}</div>
+      </div>
+      <div class="row">
+        <div class="label">Admission No</div>
+        <div class="value">{{admissionNumber}}</div>
+      </div>
+      <div class="row">
+        <div class="label">Student Name</div>
+        <div class="value">{{studentName}}</div>
+      </div>
+      <div class="row">
+        <div class="label">Class</div>
+        <div class="value">{{class}}</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="row">
+        <div class="label">Payment Mode</div>
+        <div class="value">{{paymentDetails.paidBy}}</div>
+      </div>
+      <div class="row">
+        <div class="label">Paid Amount</div>
+        <div class="value">₹{{paymentDetails.amount}}</div>
+      </div>
+      <div class="row">
+        <div class="label">Remaining Amount</div>
+        <div class="value">₹{{paymentDetails.remainingBalance}}</div>
+      </div>
+      <div class="row">
+        <div class="label">Rs. (in words)</div>
+        <input class="input" type="text" value="{{paymentDetails.amountInWords}}" readonly />
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="row">
+        <div class="label">Receiver Name</div>
+        <input class="input" type="text" value="{{paymentDetails.receiverName}}" readonly />
+      </div>
+    </div>
+
+    <div class="footer">
+      <div class="site">🌐 www.kalamkids.in</div>
+      <button class="print-btn" onclick="window.print()">🖨️ Print</button>
+      
+    </div>
+  </div>
+</body>
+</html>

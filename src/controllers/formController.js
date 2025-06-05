@@ -1,7 +1,7 @@
 const Form = require("../module/formModel");
 const Student = require("../module/sutdent"); // Corrected the typo
 // const { sendEmail } = require('../mailer'); 
-const { sendInquiryEmail, sendAdmissionApprovalEmail } = require('../mailer');
+const { sendInquiryEmail, sendAdmissionApprovalEmail, sendInquiryEmailToFather, sendInquiryEmailToMother } = require('../mailer');
 const expansive = require("../module/expansive");
  
   // Adjust the path as necessary
@@ -271,12 +271,22 @@ exports.getApprovedForms = async (req, res) => {
 
  
 
+ 
+
+  
+ 
+const formatDate = (date) => {
+  const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+  return date.toLocaleDateString('en-CA', options).split('/').join('-'); // Format to YYYY-MM-DD
+};
 exports.payForm = async (req, res) => {
-  const { amount, paidBy, amountInWords, cashReceivedFrom, relationshipName,  chequeDetails,
+  const { amount, paidBy, amountInWords, cashReceivedFrom, relationshipName, chequeDetails,
     qrTransactionId,
     bankTransferId,
     cashDenominations,
-    receiverName, } = req.body;
+    receiverName,
+    remainingBalance // Add remainingBalance to the destructured request body
+  } = req.body;
 
   try {
     const form = await Form.findById(req.params.id);
@@ -302,7 +312,7 @@ exports.payForm = async (req, res) => {
     const newInvoiceNo = `CR-${String(lastNumber + 1).padStart(6, "0")}`;
 
     const newPayment = {
-      _id: newInvoiceNo,  
+      _id: newInvoiceNo,
       amount,
       paidBy,
       amountInWords,
@@ -313,13 +323,52 @@ exports.payForm = async (req, res) => {
       bankTransferId,
       cashDenominations,
       receiverName,
-      date: new Date()
+      date: formatDate(new Date()),
+      remainingBalance // Store remaining balance if needed
     };
 
     form.paidFee = (form.paidFee || 0) + amount;
     form.feePayments.push(newPayment);
 
     await form.save();
+
+    // Prepare student data for emails, including payment details
+    const studentData = {
+      studentName: form.particularsOfChild.fullName,
+      fatherName: form.particularsOfParents.FatherName,
+      fatherMobile: form.particularsOfParents.FatherMobile,
+      motherName: form.particularsOfParents.MotherName,
+      motherMobile: form.particularsOfParents.MotherMobile,
+      admissionNumber: form.invoiceNo,
+      class: form.admissionFor,
+      paymentDetails: {
+        _id: newInvoiceNo,
+        amount,
+        paidBy,
+        amountInWords,
+        cashReceivedFrom,
+        relationshipName,
+        chequeDetails,
+        qrTransactionId,
+        bankTransferId,
+        cashDenominations,
+        receiverName,
+        date: newPayment.date,
+        remainingBalance // Include remaining balance in the email data
+      }
+    };
+
+    // Send emails to both parents
+    const fatherEmail = form.particularsOfParents.FatherEmail;
+    const motherEmail = form.particularsOfParents.MotherEmail;
+
+    if (fatherEmail) {
+      await sendInquiryEmailToFather(fatherEmail, studentData);
+    }
+
+    if (motherEmail) {
+      await sendInquiryEmailToMother(motherEmail, studentData);
+    }
 
     res.send({
       message: "Payment successful",
