@@ -22,7 +22,7 @@
       margin: auto;
       background-color: #ffffff;
       border-radius: 8px;
-      padding: 1.5rem;
+      padding: 1rem;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
     }
 
@@ -50,14 +50,14 @@
 
     .label {
       font-weight: 600;
-      font-size: 0.9rem;
+      font-size: 0.6rem;
       color: #16bab1;
       margin-bottom: 0.25rem;
     }
 
     .value, .input {
       background-color: #f1f5f9;
-      padding: 0.6rem 0.8rem;
+      padding: 0.4rem 0.8rem;
       border-radius: 5px;
       font-size: 0.95rem;
       border: 1px solid #ddd;
@@ -94,13 +94,45 @@
       .print-btn {
         display: none;
       }
+      body {
+        margin: 0 !important;
+        padding: 0 !important;
+        -webkit-print-color-adjust: exact; /* For better background color printing */
+        print-color-adjust: exact;
+      }
+      .container {
+        width: 100% !important;
+        max-width: none !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        padding: 0.5rem !important; /* Reduce padding for more content space */
+        margin: 0 !important;
+      }
+      .value, .input {
+        font-size: 0.85rem !important; /* Slightly smaller font for printing */
+      }
+      .label {
+        font-size: 0.9rem !important;
+      }
+      .header {
+        font-size: 1.2rem !important;
+      }
+      .logo {
+        width: 150px !important; /* Adjust logo size if needed */
+      }
+      .section {
+        margin-bottom: 0.8rem !important;
+      }
+      .row {
+        margin-bottom: 0.5rem !important;
+      }
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <p class="header">PAYMENT RECEIPT</p>
-    <img src="../assets/logo.png" alt="logo" class="logo" />
+    <p class="header" style="font-size: 18px;">PAYMENT RECEIPT</p>
+    <img src="https://www.kalamkids.in/static/media/Kalam%20Kids%20Logo_newlogo.d87ca3418e4a97754622.png" alt="logo" class="logo"  />
 
     <div class="section">
       <div class="row">
@@ -164,7 +196,7 @@
 
     <div class="footer">
       <div class="site">🌐 www.kalamkids.in</div>
-      <button class="print-btn" onclick="window.print()">🖨️ Print</button>
+      <!-- <button class="print-btn" onclick="window.print()">🖨️ Print</button> -->
       
     </div>
   </div>
