@@ -83,9 +83,10 @@
 
     .contact-info {
       margin-top: 30px;
-      font-size: 14px;
+      font-size: 12px;
       color: #666;
       line-height: 1.6;
+       font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
     @media (max-width: 600px) {
@@ -93,11 +94,55 @@
         padding: 20px;
       }
     }
+    @media print {
+      body {
+        margin: 0 !important;
+        padding: 0 !important;
+        background-color: #ffffff !important; /* Ensure white background for printing */
+        display: block !important; /* Override flex display */
+        min-height: auto !important; /* Remove min-height for print */
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      .container {
+        max-width: none !important;
+        width: auto !important;
+        padding: 20px !important; /* Adjusted padding */
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        margin: 0 !important; /* Remove auto margin for print */
+      }
+
+      h1 {
+        font-size: 20px !important; /* Slightly smaller heading */
+      }
+
+      p, ul, li {
+        font-size: 14px !important; /* Smaller body text */
+        line-height: 1.4 !important;
+      }
+
+      .social-icons, .contact-info {
+        display: none !important; /* Hide social icons and extra contact info to save space */
+      }
+      
+      img[alt="Kalamkids Logo"] {
+        width: 120px !important; /* Adjust logo size for print */
+        margin-bottom: 10px !important;
+      }
+    }
   </style>
 </head>
 <body>
   <div class="container">
+    
+    <div style="display: flex; justify-content: center; align-items: center;">
+      <img src="https://www.kalamkids.in/static/media/Kalam%20Kids%20Logo_newlogo.d87ca3418e4a97754622.png" alt="Kalamkids Logo" style="width: 150px; margin-bottom: 20px; margin:0 auto;" />
+    </div>
+
     <h1>Admission Approved for {{studentName}}</h1>
+    
     <p>Dear {{parentType}},</p>
     <p>We are pleased to inform you that your child's admission has been approved. Below are the details:</p>
     <ul>
