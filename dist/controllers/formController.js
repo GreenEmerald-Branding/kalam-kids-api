@@ -11,15 +11,17 @@ var Student = require("../module/sutdent"); // Corrected the typo
 // const { sendEmail } = require('../mailer'); 
 var _require = require('../mailer'),
   sendInquiryEmail = _require.sendInquiryEmail,
-  sendAdmissionApprovalEmail = _require.sendAdmissionApprovalEmail;
+  sendAdmissionApprovalEmail = _require.sendAdmissionApprovalEmail,
+  sendInquiryEmailToFather = _require.sendInquiryEmailToFather,
+  sendInquiryEmailToMother = _require.sendInquiryEmailToMother;
 var expansive = require("../module/expansive");
 
 // Adjust the path as necessary
 // Adjust the path as necessary
 exports.submitForm = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])(/*#__PURE__*/_regenerator["default"].mark(function _callee(req, res) {
-    var formData, newForm;
-    return _regenerator["default"].wrap(function _callee$(_context) {
+    var formData, newForm, _t;
+    return _regenerator["default"].wrap(function (_context) {
       while (1) switch (_context.prev = _context.next) {
         case 0:
           _context.prev = 0;
@@ -28,52 +30,52 @@ exports.submitForm = /*#__PURE__*/function () {
 
           // Validate characteristics
           if (Array.isArray(formData.childPersonalBackground.characteristics)) {
-            _context.next = 5;
+            _context.next = 1;
             break;
           }
           return _context.abrupt("return", res.status(400).json({
             success: false,
             message: "Characteristics must be an array."
           }));
-        case 5:
+        case 1:
           if (formData.childPersonalBackground.characteristics.every(function (item) {
             return typeof item === 'string';
           })) {
-            _context.next = 7;
+            _context.next = 2;
             break;
           }
           return _context.abrupt("return", res.status(400).json({
             success: false,
             message: "All characteristics must be strings."
           }));
-        case 7:
+        case 2:
           // Create a new instance of the Form model
           newForm = new Form(formData); // Save to the database
-          _context.next = 10;
+          _context.next = 3;
           return newForm.save();
-        case 10:
+        case 3:
           // Respond with success
           res.status(201).json({
             success: true,
             message: "Form submitted successfully",
             data: newForm
           });
-          _context.next = 17;
+          _context.next = 5;
           break;
-        case 13:
-          _context.prev = 13;
-          _context.t0 = _context["catch"](0);
-          console.error("Error saving form:", _context.t0.message);
+        case 4:
+          _context.prev = 4;
+          _t = _context["catch"](0);
+          console.error("Error saving form:", _t.message);
           res.status(500).json({
             success: false,
             message: "Failed to save form",
-            error: _context.t0.message
+            error: _t.message
           });
-        case 17:
+        case 5:
         case "end":
           return _context.stop();
       }
-    }, _callee, null, [[0, 13]]);
+    }, _callee, null, [[0, 4]]);
   }));
   return function (_x, _x2) {
     return _ref.apply(this, arguments);
@@ -81,8 +83,8 @@ exports.submitForm = /*#__PURE__*/function () {
 }();
 exports.updateForm = /*#__PURE__*/function () {
   var _ref2 = (0, _asyncToGenerator2["default"])(/*#__PURE__*/_regenerator["default"].mark(function _callee2(req, res) {
-    var id, updatedData, form;
-    return _regenerator["default"].wrap(function _callee2$(_context2) {
+    var id, updatedData, form, _t2;
+    return _regenerator["default"].wrap(function (_context2) {
       while (1) switch (_context2.prev = _context2.next) {
         case 0:
           _context2.prev = 0;
@@ -90,49 +92,49 @@ exports.updateForm = /*#__PURE__*/function () {
           updatedData = req.body; // Get the updated data from the request body
           // Validate the input if necessary
           if (updatedData) {
-            _context2.next = 5;
+            _context2.next = 1;
             break;
           }
           return _context2.abrupt("return", res.status(400).json({
             success: false,
             message: "No data provided for update."
           }));
-        case 5:
-          _context2.next = 7;
+        case 1:
+          _context2.next = 2;
           return Form.findByIdAndUpdate(id, updatedData, {
             "new": true
           });
-        case 7:
+        case 2:
           form = _context2.sent;
           if (form) {
-            _context2.next = 10;
+            _context2.next = 3;
             break;
           }
           return _context2.abrupt("return", res.status(404).json({
             success: false,
             message: "Form not found."
           }));
-        case 10:
+        case 3:
           res.status(200).json({
             success: true,
             message: "Form updated successfully.",
             data: form
           });
-          _context2.next = 17;
+          _context2.next = 5;
           break;
-        case 13:
-          _context2.prev = 13;
-          _context2.t0 = _context2["catch"](0);
-          console.error("Error updating form:", _context2.t0.message);
+        case 4:
+          _context2.prev = 4;
+          _t2 = _context2["catch"](0);
+          console.error("Error updating form:", _t2.message);
           res.status(500).json({
             success: false,
             message: "Failed to update form."
           });
-        case 17:
+        case 5:
         case "end":
           return _context2.stop();
       }
-    }, _callee2, null, [[0, 13]]);
+    }, _callee2, null, [[0, 4]]);
   }));
   return function (_x3, _x4) {
     return _ref2.apply(this, arguments);
@@ -140,44 +142,44 @@ exports.updateForm = /*#__PURE__*/function () {
 }();
 exports.getFormById = /*#__PURE__*/function () {
   var _ref3 = (0, _asyncToGenerator2["default"])(/*#__PURE__*/_regenerator["default"].mark(function _callee3(req, res) {
-    var id, form;
-    return _regenerator["default"].wrap(function _callee3$(_context3) {
+    var id, form, _t3;
+    return _regenerator["default"].wrap(function (_context3) {
       while (1) switch (_context3.prev = _context3.next) {
         case 0:
           _context3.prev = 0;
           id = req.params.id;
-          _context3.next = 4;
+          _context3.next = 1;
           return Form.findById(id);
-        case 4:
+        case 1:
           form = _context3.sent;
           if (form) {
-            _context3.next = 7;
+            _context3.next = 2;
             break;
           }
           return _context3.abrupt("return", res.status(404).json({
             success: false,
             message: "Form not found"
           }));
-        case 7:
+        case 2:
           res.status(200).json({
             success: true,
             data: form
           });
-          _context3.next = 14;
+          _context3.next = 4;
           break;
-        case 10:
-          _context3.prev = 10;
-          _context3.t0 = _context3["catch"](0);
-          console.error("Error fetching form:", _context3.t0.message);
+        case 3:
+          _context3.prev = 3;
+          _t3 = _context3["catch"](0);
+          console.error("Error fetching form:", _t3.message);
           res.status(500).json({
             success: false,
             message: "Failed to fetch form"
           });
-        case 14:
+        case 4:
         case "end":
           return _context3.stop();
       }
-    }, _callee3, null, [[0, 10]]);
+    }, _callee3, null, [[0, 3]]);
   }));
   return function (_x5, _x6) {
     return _ref3.apply(this, arguments);
@@ -185,34 +187,34 @@ exports.getFormById = /*#__PURE__*/function () {
 }();
 exports.getAllForm = /*#__PURE__*/function () {
   var _ref4 = (0, _asyncToGenerator2["default"])(/*#__PURE__*/_regenerator["default"].mark(function _callee4(req, res) {
-    var form;
-    return _regenerator["default"].wrap(function _callee4$(_context4) {
+    var form, _t4;
+    return _regenerator["default"].wrap(function (_context4) {
       while (1) switch (_context4.prev = _context4.next) {
         case 0:
           _context4.prev = 0;
-          _context4.next = 3;
+          _context4.next = 1;
           return Form.find();
-        case 3:
+        case 1:
           form = _context4.sent;
           res.status(200).json({
             success: true,
             data: form
           });
-          _context4.next = 11;
+          _context4.next = 3;
           break;
-        case 7:
-          _context4.prev = 7;
-          _context4.t0 = _context4["catch"](0);
-          console.error("Error fetching students:", _context4.t0.message);
+        case 2:
+          _context4.prev = 2;
+          _t4 = _context4["catch"](0);
+          console.error("Error fetching students:", _t4.message);
           res.status(500).json({
             success: false,
             message: "Failed to fetch students"
           });
-        case 11:
+        case 3:
         case "end":
           return _context4.stop();
       }
-    }, _callee4, null, [[0, 7]]);
+    }, _callee4, null, [[0, 2]]);
   }));
   return function (_x7, _x8) {
     return _ref4.apply(this, arguments);
@@ -220,53 +222,53 @@ exports.getAllForm = /*#__PURE__*/function () {
 }();
 exports.deleteForm = /*#__PURE__*/function () {
   var _ref5 = (0, _asyncToGenerator2["default"])(/*#__PURE__*/_regenerator["default"].mark(function _callee5(req, res) {
-    var id, form;
-    return _regenerator["default"].wrap(function _callee5$(_context5) {
+    var id, form, _t5;
+    return _regenerator["default"].wrap(function (_context5) {
       while (1) switch (_context5.prev = _context5.next) {
         case 0:
           _context5.prev = 0;
           id = req.params.id;
-          _context5.next = 4;
+          _context5.next = 1;
           return Form.findByIdAndDelete(id);
-        case 4:
+        case 1:
           form = _context5.sent;
           if (form) {
-            _context5.next = 7;
+            _context5.next = 2;
             break;
           }
           return _context5.abrupt("return", res.status(404).json({
             success: false,
             message: "Form not found"
           }));
-        case 7:
+        case 2:
           res.status(200).json({
             success: true,
             message: "Form deleted successfully"
           });
-          _context5.next = 14;
+          _context5.next = 4;
           break;
-        case 10:
-          _context5.prev = 10;
-          _context5.t0 = _context5["catch"](0);
-          console.error("Error deleting form:", _context5.t0.message);
+        case 3:
+          _context5.prev = 3;
+          _t5 = _context5["catch"](0);
+          console.error("Error deleting form:", _t5.message);
           res.status(500).json({
             success: false,
             message: "Failed to delete form"
           });
-        case 14:
+        case 4:
         case "end":
           return _context5.stop();
       }
-    }, _callee5, null, [[0, 10]]);
+    }, _callee5, null, [[0, 3]]);
   }));
-  return function (_x9, _x10) {
+  return function (_x9, _x0) {
     return _ref5.apply(this, arguments);
   };
 }();
 exports.submitStudent = /*#__PURE__*/function () {
   var _ref6 = (0, _asyncToGenerator2["default"])(/*#__PURE__*/_regenerator["default"].mark(function _callee6(req, res) {
-    var studentData, newStudent;
-    return _regenerator["default"].wrap(function _callee6$(_context6) {
+    var studentData, newStudent, _t6;
+    return _regenerator["default"].wrap(function (_context6) {
       while (1) switch (_context6.prev = _context6.next) {
         case 0:
           _context6.prev = 0;
@@ -275,203 +277,203 @@ exports.submitStudent = /*#__PURE__*/function () {
 
           // Validate required fields
           if (!(!studentData.studentName || !studentData.fatherName || !studentData.fatherMobile)) {
-            _context6.next = 5;
+            _context6.next = 1;
             break;
           }
           return _context6.abrupt("return", res.status(400).json({
             success: false,
             message: "All fields are required"
           }));
-        case 5:
+        case 1:
           // Create a new student instance
           newStudent = new Student(studentData);
-          _context6.next = 8;
+          _context6.next = 2;
           return newStudent.save();
-        case 8:
+        case 2:
           if (!studentData.fatherEmail) {
-            _context6.next = 11;
+            _context6.next = 3;
             break;
           }
-          _context6.next = 11;
+          _context6.next = 3;
           return sendInquiryEmail(studentData.fatherEmail, studentData);
-        case 11:
+        case 3:
           if (!studentData.motherEmail) {
-            _context6.next = 14;
+            _context6.next = 4;
             break;
           }
-          _context6.next = 14;
+          _context6.next = 4;
           return sendInquiryEmail(studentData.motherEmail, studentData);
-        case 14:
+        case 4:
           res.status(201).json({
             success: true,
             message: "Student submitted successfully",
             data: newStudent
           });
-          _context6.next = 21;
+          _context6.next = 6;
           break;
-        case 17:
-          _context6.prev = 17;
-          _context6.t0 = _context6["catch"](0);
-          console.error("Student submission error:", _context6.t0.message);
+        case 5:
+          _context6.prev = 5;
+          _t6 = _context6["catch"](0);
+          console.error("Student submission error:", _t6.message);
           res.status(500).json({
             success: false,
             message: "Submission failed",
-            error: _context6.t0.message
+            error: _t6.message
           });
-        case 21:
+        case 6:
         case "end":
           return _context6.stop();
       }
-    }, _callee6, null, [[0, 17]]);
+    }, _callee6, null, [[0, 5]]);
   }));
-  return function (_x11, _x12) {
+  return function (_x1, _x10) {
     return _ref6.apply(this, arguments);
   };
 }();
 exports.getStudentById = /*#__PURE__*/function () {
   var _ref7 = (0, _asyncToGenerator2["default"])(/*#__PURE__*/_regenerator["default"].mark(function _callee7(req, res) {
-    var id, student;
-    return _regenerator["default"].wrap(function _callee7$(_context7) {
+    var id, student, _t7;
+    return _regenerator["default"].wrap(function (_context7) {
       while (1) switch (_context7.prev = _context7.next) {
         case 0:
           _context7.prev = 0;
           id = req.params.id;
-          _context7.next = 4;
+          _context7.next = 1;
           return Student.findById(id);
-        case 4:
+        case 1:
           student = _context7.sent;
           if (student) {
-            _context7.next = 7;
+            _context7.next = 2;
             break;
           }
           return _context7.abrupt("return", res.status(404).json({
             success: false,
             message: "Student not found"
           }));
-        case 7:
+        case 2:
           res.status(200).json({
             success: true,
             data: student
           });
-          _context7.next = 14;
+          _context7.next = 4;
           break;
-        case 10:
-          _context7.prev = 10;
-          _context7.t0 = _context7["catch"](0);
-          console.error("Error fetching student:", _context7.t0.message);
+        case 3:
+          _context7.prev = 3;
+          _t7 = _context7["catch"](0);
+          console.error("Error fetching student:", _t7.message);
           res.status(500).json({
             success: false,
             message: "Failed to fetch student"
           });
-        case 14:
+        case 4:
         case "end":
           return _context7.stop();
       }
-    }, _callee7, null, [[0, 10]]);
+    }, _callee7, null, [[0, 3]]);
   }));
-  return function (_x13, _x14) {
+  return function (_x11, _x12) {
     return _ref7.apply(this, arguments);
   };
 }();
 exports.getAllStudents = /*#__PURE__*/function () {
   var _ref8 = (0, _asyncToGenerator2["default"])(/*#__PURE__*/_regenerator["default"].mark(function _callee8(req, res) {
-    var students;
-    return _regenerator["default"].wrap(function _callee8$(_context8) {
+    var students, _t8;
+    return _regenerator["default"].wrap(function (_context8) {
       while (1) switch (_context8.prev = _context8.next) {
         case 0:
           _context8.prev = 0;
-          _context8.next = 3;
+          _context8.next = 1;
           return Student.find();
-        case 3:
+        case 1:
           students = _context8.sent;
           res.status(200).json({
             success: true,
             data: students
           });
-          _context8.next = 11;
+          _context8.next = 3;
           break;
-        case 7:
-          _context8.prev = 7;
-          _context8.t0 = _context8["catch"](0);
-          console.error("Error fetching students:", _context8.t0.message);
+        case 2:
+          _context8.prev = 2;
+          _t8 = _context8["catch"](0);
+          console.error("Error fetching students:", _t8.message);
           res.status(500).json({
             success: false,
             message: "Failed to fetch students"
           });
-        case 11:
+        case 3:
         case "end":
           return _context8.stop();
       }
-    }, _callee8, null, [[0, 7]]);
+    }, _callee8, null, [[0, 2]]);
   }));
-  return function (_x15, _x16) {
+  return function (_x13, _x14) {
     return _ref8.apply(this, arguments);
   };
 }();
 exports.deleteStudent = /*#__PURE__*/function () {
   var _ref9 = (0, _asyncToGenerator2["default"])(/*#__PURE__*/_regenerator["default"].mark(function _callee9(req, res) {
-    var id, student;
-    return _regenerator["default"].wrap(function _callee9$(_context9) {
+    var id, student, _t9;
+    return _regenerator["default"].wrap(function (_context9) {
       while (1) switch (_context9.prev = _context9.next) {
         case 0:
           _context9.prev = 0;
           id = req.params.id;
-          _context9.next = 4;
+          _context9.next = 1;
           return Student.findByIdAndDelete(id);
-        case 4:
+        case 1:
           student = _context9.sent;
           if (student) {
-            _context9.next = 7;
+            _context9.next = 2;
             break;
           }
           return _context9.abrupt("return", res.status(404).json({
             success: false,
             message: "Student not found"
           }));
-        case 7:
+        case 2:
           res.status(200).json({
             success: true,
             message: "Student deleted successfully"
           });
-          _context9.next = 14;
+          _context9.next = 4;
           break;
-        case 10:
-          _context9.prev = 10;
-          _context9.t0 = _context9["catch"](0);
-          console.error("Error deleting student:", _context9.t0.message);
+        case 3:
+          _context9.prev = 3;
+          _t9 = _context9["catch"](0);
+          console.error("Error deleting student:", _t9.message);
           res.status(500).json({
             success: false,
             message: "Failed to delete student"
           });
-        case 14:
+        case 4:
         case "end":
           return _context9.stop();
       }
-    }, _callee9, null, [[0, 10]]);
+    }, _callee9, null, [[0, 3]]);
   }));
-  return function (_x17, _x18) {
+  return function (_x15, _x16) {
     return _ref9.apply(this, arguments);
   };
 }();
 exports.approveForm = /*#__PURE__*/function () {
-  var _ref10 = (0, _asyncToGenerator2["default"])(/*#__PURE__*/_regenerator["default"].mark(function _callee10(req, res) {
-    var id, feeAmount, lastOrder, lastNumber, numberPart, newInvoiceNo, existingForm, form, _form$particularsOfCh, _form$particularsOfPa, FatherEmail, MotherEmail, studentData;
-    return _regenerator["default"].wrap(function _callee10$(_context10) {
-      while (1) switch (_context10.prev = _context10.next) {
+  var _ref0 = (0, _asyncToGenerator2["default"])(/*#__PURE__*/_regenerator["default"].mark(function _callee0(req, res) {
+    var id, feeAmount, lastOrder, lastNumber, numberPart, newInvoiceNo, existingForm, form, _form$particularsOfCh, _form$particularsOfPa, FatherEmail, MotherEmail, studentData, _t0;
+    return _regenerator["default"].wrap(function (_context0) {
+      while (1) switch (_context0.prev = _context0.next) {
         case 0:
-          _context10.prev = 0;
+          _context0.prev = 0;
           id = req.params.id;
           feeAmount = req.body.feeAmount; // Validate fee amount
           if (!(!feeAmount || isNaN(feeAmount) || feeAmount <= 0)) {
-            _context10.next = 5;
+            _context0.next = 1;
             break;
           }
-          return _context10.abrupt("return", res.status(400).json({
+          return _context0.abrupt("return", res.status(400).json({
             success: false,
             message: "Invalid fee amount"
           }));
-        case 5:
-          _context10.next = 7;
+        case 1:
+          _context0.next = 2;
           return Form.find({
             invoiceNo: {
               $regex: /^KSS-\d{6}$/
@@ -480,8 +482,8 @@ exports.approveForm = /*#__PURE__*/function () {
             invoiceNo: -1
           }) // Sort invoiceNo descending
           .limit(1);
-        case 7:
-          lastOrder = _context10.sent;
+        case 2:
+          lastOrder = _context0.sent;
           lastNumber = 700; // Default starting number
           if (lastOrder.length > 0) {
             numberPart = parseInt(lastOrder[0].invoiceNo.split("-")[1]);
@@ -490,29 +492,29 @@ exports.approveForm = /*#__PURE__*/function () {
             }
           }
           newInvoiceNo = "KSS-".concat(String(lastNumber + 1).padStart(6, "0")); // Check if the form is already approved to avoid double invoicing
-          _context10.next = 13;
+          _context0.next = 3;
           return Form.findById(id);
-        case 13:
-          existingForm = _context10.sent;
+        case 3:
+          existingForm = _context0.sent;
           if (existingForm) {
-            _context10.next = 16;
+            _context0.next = 4;
             break;
           }
-          return _context10.abrupt("return", res.status(404).json({
+          return _context0.abrupt("return", res.status(404).json({
             success: false,
             message: "Form not found"
           }));
-        case 16:
+        case 4:
           if (!(existingForm.isApproved && existingForm.invoiceNo)) {
-            _context10.next = 18;
+            _context0.next = 5;
             break;
           }
-          return _context10.abrupt("return", res.status(400).json({
+          return _context0.abrupt("return", res.status(400).json({
             success: false,
             message: "Form already approved"
           }));
-        case 18:
-          _context10.next = 20;
+        case 5:
+          _context0.next = 6;
           return Form.findByIdAndUpdate(id, {
             isApproved: true,
             invoiceNo: newInvoiceNo,
@@ -522,10 +524,10 @@ exports.approveForm = /*#__PURE__*/function () {
           {
             "new": true
           });
-        case 20:
-          form = _context10.sent;
+        case 6:
+          form = _context0.sent;
           if (!form.particularsOfParents) {
-            _context10.next = 30;
+            _context0.next = 8;
             break;
           }
           _form$particularsOfPa = form.particularsOfParents, FatherEmail = _form$particularsOfPa.FatherEmail, MotherEmail = _form$particularsOfPa.MotherEmail; // Assuming these fields exist
@@ -534,161 +536,169 @@ exports.approveForm = /*#__PURE__*/function () {
             admissionNumber: newInvoiceNo
           }; // Send email to father
           if (!FatherEmail) {
-            _context10.next = 27;
+            _context0.next = 7;
             break;
           }
-          _context10.next = 27;
+          _context0.next = 7;
           return sendAdmissionApprovalEmail(FatherEmail, _objectSpread(_objectSpread({}, studentData), {}, {
             parentType: 'Father'
           }));
-        case 27:
+        case 7:
           if (!MotherEmail) {
-            _context10.next = 30;
+            _context0.next = 8;
             break;
           }
-          _context10.next = 30;
+          _context0.next = 8;
           return sendAdmissionApprovalEmail(MotherEmail, _objectSpread(_objectSpread({}, studentData), {}, {
             parentType: 'Mother'
           }));
-        case 30:
+        case 8:
           res.status(200).json({
             success: true,
             message: "Form approved successfully",
             data: form
           });
-          _context10.next = 37;
+          _context0.next = 10;
           break;
-        case 33:
-          _context10.prev = 33;
-          _context10.t0 = _context10["catch"](0);
-          console.error("Error approving form:", _context10.t0.message);
+        case 9:
+          _context0.prev = 9;
+          _t0 = _context0["catch"](0);
+          console.error("Error approving form:", _t0.message);
           res.status(500).json({
             success: false,
             message: "Failed to approve form"
           });
-        case 37:
+        case 10:
         case "end":
-          return _context10.stop();
+          return _context0.stop();
       }
-    }, _callee10, null, [[0, 33]]);
+    }, _callee0, null, [[0, 9]]);
   }));
-  return function (_x19, _x20) {
-    return _ref10.apply(this, arguments);
+  return function (_x17, _x18) {
+    return _ref0.apply(this, arguments);
   };
 }();
 exports.getFormById = /*#__PURE__*/function () {
-  var _ref11 = (0, _asyncToGenerator2["default"])(/*#__PURE__*/_regenerator["default"].mark(function _callee11(req, res) {
-    var id, form;
-    return _regenerator["default"].wrap(function _callee11$(_context11) {
-      while (1) switch (_context11.prev = _context11.next) {
+  var _ref1 = (0, _asyncToGenerator2["default"])(/*#__PURE__*/_regenerator["default"].mark(function _callee1(req, res) {
+    var id, form, _t1;
+    return _regenerator["default"].wrap(function (_context1) {
+      while (1) switch (_context1.prev = _context1.next) {
         case 0:
-          _context11.prev = 0;
+          _context1.prev = 0;
           id = req.params.id;
-          _context11.next = 4;
+          _context1.next = 1;
           return Form.findById(id);
-        case 4:
-          form = _context11.sent;
+        case 1:
+          form = _context1.sent;
           if (form) {
-            _context11.next = 7;
+            _context1.next = 2;
             break;
           }
-          return _context11.abrupt("return", res.status(404).json({
+          return _context1.abrupt("return", res.status(404).json({
             success: false,
             message: "Form not found"
           }));
-        case 7:
+        case 2:
           res.status(200).json({
             success: true,
             data: form
           });
-          _context11.next = 14;
+          _context1.next = 4;
           break;
-        case 10:
-          _context11.prev = 10;
-          _context11.t0 = _context11["catch"](0);
-          console.error("Error fetching form:", _context11.t0.message);
+        case 3:
+          _context1.prev = 3;
+          _t1 = _context1["catch"](0);
+          console.error("Error fetching form:", _t1.message);
           res.status(500).json({
             success: false,
             message: "Failed to fetch form"
           });
-        case 14:
+        case 4:
         case "end":
-          return _context11.stop();
+          return _context1.stop();
       }
-    }, _callee11, null, [[0, 10]]);
+    }, _callee1, null, [[0, 3]]);
   }));
-  return function (_x21, _x22) {
-    return _ref11.apply(this, arguments);
+  return function (_x19, _x20) {
+    return _ref1.apply(this, arguments);
   };
 }();
 exports.getApprovedForms = /*#__PURE__*/function () {
-  var _ref12 = (0, _asyncToGenerator2["default"])(/*#__PURE__*/_regenerator["default"].mark(function _callee12(req, res) {
-    var approvedForms;
-    return _regenerator["default"].wrap(function _callee12$(_context12) {
-      while (1) switch (_context12.prev = _context12.next) {
+  var _ref10 = (0, _asyncToGenerator2["default"])(/*#__PURE__*/_regenerator["default"].mark(function _callee10(req, res) {
+    var approvedForms, _t10;
+    return _regenerator["default"].wrap(function (_context10) {
+      while (1) switch (_context10.prev = _context10.next) {
         case 0:
-          _context12.prev = 0;
-          _context12.next = 3;
+          _context10.prev = 0;
+          _context10.next = 1;
           return Form.find({
             isApproved: true
           });
-        case 3:
-          approvedForms = _context12.sent;
+        case 1:
+          approvedForms = _context10.sent;
           if (!(approvedForms.length === 0)) {
-            _context12.next = 7;
+            _context10.next = 2;
             break;
           }
-          return _context12.abrupt("return", res.status(404).json({
+          return _context10.abrupt("return", res.status(404).json({
             success: false,
             message: "No approved forms found"
           }));
-        case 7:
+        case 2:
           res.status(200).json({
             success: true,
             data: approvedForms
           });
-          _context12.next = 14;
+          _context10.next = 4;
           break;
-        case 10:
-          _context12.prev = 10;
-          _context12.t0 = _context12["catch"](0);
-          console.error("Error fetching approved forms:", _context12.t0.message);
+        case 3:
+          _context10.prev = 3;
+          _t10 = _context10["catch"](0);
+          console.error("Error fetching approved forms:", _t10.message);
           res.status(500).json({
             success: false,
             message: "Failed to fetch approved forms"
           });
-        case 14:
+        case 4:
         case "end":
-          return _context12.stop();
+          return _context10.stop();
       }
-    }, _callee12, null, [[0, 10]]);
+    }, _callee10, null, [[0, 3]]);
   }));
-  return function (_x23, _x24) {
-    return _ref12.apply(this, arguments);
+  return function (_x21, _x22) {
+    return _ref10.apply(this, arguments);
   };
 }();
+var formatDate = function formatDate(date) {
+  var options = {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  };
+  return date.toLocaleDateString('en-CA', options).split('/').join('-'); // Format to YYYY-MM-DD
+};
 exports.payForm = /*#__PURE__*/function () {
-  var _ref13 = (0, _asyncToGenerator2["default"])(/*#__PURE__*/_regenerator["default"].mark(function _callee13(req, res) {
-    var _req$body, amount, paidBy, amountInWords, cashReceivedFrom, relationshipName, chequeDetails, qrTransactionId, bankTransferId, cashDenominations, receiverName, form, lastFormWithPayment, lastNumber, lastPayment, lastId, match, newInvoiceNo, newPayment;
-    return _regenerator["default"].wrap(function _callee13$(_context13) {
-      while (1) switch (_context13.prev = _context13.next) {
+  var _ref11 = (0, _asyncToGenerator2["default"])(/*#__PURE__*/_regenerator["default"].mark(function _callee11(req, res) {
+    var _req$body, amount, paidBy, amountInWords, cashReceivedFrom, relationshipName, chequeDetails, qrTransactionId, bankTransferId, cashDenominations, receiverName, form, lastFormWithPayment, lastNumber, lastPayment, lastId, match, newInvoiceNo, newRemainingBalance, newPayment, studentData, fatherEmail, motherEmail, _t11;
+    return _regenerator["default"].wrap(function (_context11) {
+      while (1) switch (_context11.prev = _context11.next) {
         case 0:
           _req$body = req.body, amount = _req$body.amount, paidBy = _req$body.paidBy, amountInWords = _req$body.amountInWords, cashReceivedFrom = _req$body.cashReceivedFrom, relationshipName = _req$body.relationshipName, chequeDetails = _req$body.chequeDetails, qrTransactionId = _req$body.qrTransactionId, bankTransferId = _req$body.bankTransferId, cashDenominations = _req$body.cashDenominations, receiverName = _req$body.receiverName;
-          _context13.prev = 1;
-          _context13.next = 4;
+          _context11.prev = 1;
+          _context11.next = 2;
           return Form.findById(req.params.id);
-        case 4:
-          form = _context13.sent;
+        case 2:
+          form = _context11.sent;
           if (form) {
-            _context13.next = 7;
+            _context11.next = 3;
             break;
           }
-          return _context13.abrupt("return", res.status(404).send("Form not found"));
-        case 7:
+          return _context11.abrupt("return", res.status(404).send("Form not found"));
+        case 3:
           form.feePayments = form.feePayments || [];
 
           // Fetch the last payment's invoice number
-          _context13.next = 10;
+          _context11.next = 4;
           return Form.findOne({
             "feePayments.0": {
               $exists: true
@@ -696,8 +706,8 @@ exports.payForm = /*#__PURE__*/function () {
           }).sort({
             "feePayments._id": -1
           }).select("feePayments");
-        case 10:
-          lastFormWithPayment = _context13.sent;
+        case 4:
+          lastFormWithPayment = _context11.sent;
           lastNumber = 2083; // Default starting number
           if (lastFormWithPayment) {
             lastPayment = lastFormWithPayment.feePayments[lastFormWithPayment.feePayments.length - 1];
@@ -708,6 +718,7 @@ exports.payForm = /*#__PURE__*/function () {
             }
           }
           newInvoiceNo = "CR-".concat(String(lastNumber + 1).padStart(6, "0"));
+          newRemainingBalance = form.feeAmount - ((form.paidFee || 0) + amount);
           newPayment = {
             _id: newInvoiceNo,
             amount: amount,
@@ -720,59 +731,101 @@ exports.payForm = /*#__PURE__*/function () {
             bankTransferId: bankTransferId,
             cashDenominations: cashDenominations,
             receiverName: receiverName,
-            date: new Date()
+            date: formatDate(new Date()),
+            remainingBalance: newRemainingBalance
           };
           form.paidFee = (form.paidFee || 0) + amount;
           form.feePayments.push(newPayment);
-          _context13.next = 19;
+          _context11.next = 5;
           return form.save();
-        case 19:
+        case 5:
+          // Prepare student data for emails, including payment details
+          studentData = {
+            studentName: form.particularsOfChild.fullName,
+            fatherName: form.particularsOfParents.FatherName,
+            fatherMobile: form.particularsOfParents.FatherMobile,
+            motherName: form.particularsOfParents.MotherName,
+            motherMobile: form.particularsOfParents.MotherMobile,
+            admissionNumber: form.invoiceNo,
+            "class": form.admissionFor,
+            paymentDetails: {
+              _id: newInvoiceNo,
+              amount: amount,
+              paidBy: paidBy,
+              amountInWords: amountInWords,
+              cashReceivedFrom: cashReceivedFrom,
+              relationshipName: relationshipName,
+              chequeDetails: chequeDetails,
+              qrTransactionId: qrTransactionId,
+              bankTransferId: bankTransferId,
+              cashDenominations: cashDenominations,
+              receiverName: receiverName,
+              date: newPayment.date,
+              remainingBalance: newRemainingBalance
+            }
+          }; // Send emails to both parents
+          fatherEmail = form.particularsOfParents.FatherEmail;
+          motherEmail = form.particularsOfParents.MotherEmail;
+          if (!fatherEmail) {
+            _context11.next = 6;
+            break;
+          }
+          _context11.next = 6;
+          return sendInquiryEmailToFather(fatherEmail, studentData);
+        case 6:
+          if (!motherEmail) {
+            _context11.next = 7;
+            break;
+          }
+          _context11.next = 7;
+          return sendInquiryEmailToMother(motherEmail, studentData);
+        case 7:
           res.send({
             message: "Payment successful",
             paymentId: newInvoiceNo,
             updatedForm: form
           });
-          _context13.next = 26;
+          _context11.next = 9;
           break;
-        case 22:
-          _context13.prev = 22;
-          _context13.t0 = _context13["catch"](1);
-          console.error("Error processing payment:", _context13.t0.message);
+        case 8:
+          _context11.prev = 8;
+          _t11 = _context11["catch"](1);
+          console.error("Error processing payment:", _t11.message);
           res.status(500).json({
             success: false,
             message: "Payment processing failed"
           });
-        case 26:
+        case 9:
         case "end":
-          return _context13.stop();
+          return _context11.stop();
       }
-    }, _callee13, null, [[1, 22]]);
+    }, _callee11, null, [[1, 8]]);
   }));
-  return function (_x25, _x26) {
-    return _ref13.apply(this, arguments);
+  return function (_x23, _x24) {
+    return _ref11.apply(this, arguments);
   };
 }();
 exports.getPaymentsForForm = /*#__PURE__*/function () {
-  var _ref14 = (0, _asyncToGenerator2["default"])(/*#__PURE__*/_regenerator["default"].mark(function _callee14(req, res) {
-    var id, form, feePaymentsWithFormId;
-    return _regenerator["default"].wrap(function _callee14$(_context14) {
-      while (1) switch (_context14.prev = _context14.next) {
+  var _ref12 = (0, _asyncToGenerator2["default"])(/*#__PURE__*/_regenerator["default"].mark(function _callee12(req, res) {
+    var id, form, feePaymentsWithFormId, _t12;
+    return _regenerator["default"].wrap(function (_context12) {
+      while (1) switch (_context12.prev = _context12.next) {
         case 0:
-          _context14.prev = 0;
+          _context12.prev = 0;
           id = req.params.id;
-          _context14.next = 4;
+          _context12.next = 1;
           return Form.findById(id);
-        case 4:
-          form = _context14.sent;
+        case 1:
+          form = _context12.sent;
           if (form) {
-            _context14.next = 7;
+            _context12.next = 2;
             break;
           }
-          return _context14.abrupt("return", res.status(404).json({
+          return _context12.abrupt("return", res.status(404).json({
             success: false,
             message: "Form not found"
           }));
-        case 7:
+        case 2:
           feePaymentsWithFormId = form.feePayments.map(function (payment) {
             return _objectSpread(_objectSpread({}, payment.toObject()), {}, {
               // convert Mongoose subdoc to plain JS object
@@ -788,37 +841,37 @@ exports.getPaymentsForForm = /*#__PURE__*/function () {
               feePayments: feePaymentsWithFormId
             }
           });
-          _context14.next = 15;
+          _context12.next = 4;
           break;
-        case 11:
-          _context14.prev = 11;
-          _context14.t0 = _context14["catch"](0);
-          console.error("Error fetching payments:", _context14.t0.message);
+        case 3:
+          _context12.prev = 3;
+          _t12 = _context12["catch"](0);
+          console.error("Error fetching payments:", _t12.message);
           res.status(500).json({
             success: false,
             message: "Something went wrong"
           });
-        case 15:
+        case 4:
         case "end":
-          return _context14.stop();
+          return _context12.stop();
       }
-    }, _callee14, null, [[0, 11]]);
+    }, _callee12, null, [[0, 3]]);
   }));
-  return function (_x27, _x28) {
-    return _ref14.apply(this, arguments);
+  return function (_x25, _x26) {
+    return _ref12.apply(this, arguments);
   };
 }();
 exports.getAllPayments = /*#__PURE__*/function () {
-  var _ref15 = (0, _asyncToGenerator2["default"])(/*#__PURE__*/_regenerator["default"].mark(function _callee15(req, res) {
-    var forms, allPayments;
-    return _regenerator["default"].wrap(function _callee15$(_context15) {
-      while (1) switch (_context15.prev = _context15.next) {
+  var _ref13 = (0, _asyncToGenerator2["default"])(/*#__PURE__*/_regenerator["default"].mark(function _callee13(req, res) {
+    var forms, allPayments, _t13;
+    return _regenerator["default"].wrap(function (_context13) {
+      while (1) switch (_context13.prev = _context13.next) {
         case 0:
-          _context15.prev = 0;
-          _context15.next = 3;
+          _context13.prev = 0;
+          _context13.next = 1;
           return Form.find({});
-        case 3:
-          forms = _context15.sent;
+        case 1:
+          forms = _context13.sent;
           allPayments = forms.flatMap(function (form) {
             var totalPaidFee = 0; // Initialize total paid fee for each form
 
@@ -858,47 +911,47 @@ exports.getAllPayments = /*#__PURE__*/function () {
             success: true,
             data: allPayments
           });
-          _context15.next = 12;
+          _context13.next = 3;
           break;
-        case 8:
-          _context15.prev = 8;
-          _context15.t0 = _context15["catch"](0);
-          console.error("Error fetching all payments:", _context15.t0.message);
+        case 2:
+          _context13.prev = 2;
+          _t13 = _context13["catch"](0);
+          console.error("Error fetching all payments:", _t13.message);
           res.status(500).json({
             success: false,
             message: "Failed to fetch all payments"
           });
-        case 12:
+        case 3:
         case "end":
-          return _context15.stop();
+          return _context13.stop();
       }
-    }, _callee15, null, [[0, 8]]);
+    }, _callee13, null, [[0, 2]]);
   }));
-  return function (_x29, _x30) {
-    return _ref15.apply(this, arguments);
+  return function (_x27, _x28) {
+    return _ref13.apply(this, arguments);
   };
 }();
 exports.getPaymentHistory = /*#__PURE__*/function () {
-  var _ref16 = (0, _asyncToGenerator2["default"])(/*#__PURE__*/_regenerator["default"].mark(function _callee16(req, res) {
-    var id, form, paymentHistory, overallPaidFee;
-    return _regenerator["default"].wrap(function _callee16$(_context16) {
-      while (1) switch (_context16.prev = _context16.next) {
+  var _ref14 = (0, _asyncToGenerator2["default"])(/*#__PURE__*/_regenerator["default"].mark(function _callee14(req, res) {
+    var id, form, paymentHistory, overallPaidFee, _t14;
+    return _regenerator["default"].wrap(function (_context14) {
+      while (1) switch (_context14.prev = _context14.next) {
         case 0:
-          _context16.prev = 0;
+          _context14.prev = 0;
           id = req.params.id;
-          _context16.next = 4;
+          _context14.next = 1;
           return Form.findById(id);
-        case 4:
-          form = _context16.sent;
+        case 1:
+          form = _context14.sent;
           if (form) {
-            _context16.next = 7;
+            _context14.next = 2;
             break;
           }
-          return _context16.abrupt("return", res.status(404).json({
+          return _context14.abrupt("return", res.status(404).json({
             success: false,
             message: "Form not found"
           }));
-        case 7:
+        case 2:
           // Prepare the payment history
           paymentHistory = form.feePayments.map(function (payment) {
             return {
@@ -916,44 +969,44 @@ exports.getPaymentHistory = /*#__PURE__*/function () {
               paymentHistory: paymentHistory
             }
           });
-          _context16.next = 16;
+          _context14.next = 4;
           break;
-        case 12:
-          _context16.prev = 12;
-          _context16.t0 = _context16["catch"](0);
-          console.error("Error fetching payment history:", _context16.t0.message);
+        case 3:
+          _context14.prev = 3;
+          _t14 = _context14["catch"](0);
+          console.error("Error fetching payment history:", _t14.message);
           res.status(500).json({
             success: false,
             message: "Failed to fetch payment history"
           });
-        case 16:
+        case 4:
         case "end":
-          return _context16.stop();
+          return _context14.stop();
       }
-    }, _callee16, null, [[0, 12]]);
+    }, _callee14, null, [[0, 3]]);
   }));
-  return function (_x31, _x32) {
-    return _ref16.apply(this, arguments);
+  return function (_x29, _x30) {
+    return _ref14.apply(this, arguments);
   };
 }();
 exports.getOverallPayment = /*#__PURE__*/function () {
-  var _ref17 = (0, _asyncToGenerator2["default"])(/*#__PURE__*/_regenerator["default"].mark(function _callee17(req, res) {
-    var forms, totalPaid, expansives, totalExpansiveAmount, adjustedTotalPaid;
-    return _regenerator["default"].wrap(function _callee17$(_context17) {
-      while (1) switch (_context17.prev = _context17.next) {
+  var _ref15 = (0, _asyncToGenerator2["default"])(/*#__PURE__*/_regenerator["default"].mark(function _callee15(req, res) {
+    var forms, totalPaid, expansives, totalExpansiveAmount, adjustedTotalPaid, _t15;
+    return _regenerator["default"].wrap(function (_context15) {
+      while (1) switch (_context15.prev = _context15.next) {
         case 0:
-          _context17.prev = 0;
-          _context17.next = 3;
+          _context15.prev = 0;
+          _context15.next = 1;
           return Form.find({});
-        case 3:
-          forms = _context17.sent;
+        case 1:
+          forms = _context15.sent;
           totalPaid = forms.reduce(function (acc, form) {
             return acc + (form.paidFee || 0);
           }, 0); // Fetch all expansive records and calculate total amount
-          _context17.next = 7;
+          _context15.next = 2;
           return expansive.find({});
-        case 7:
-          expansives = _context17.sent;
+        case 2:
+          expansives = _context15.sent;
           totalExpansiveAmount = expansives.reduce(function (acc, exp) {
             return acc + (exp.approvedAmount || 0);
           }, 0);
@@ -963,52 +1016,52 @@ exports.getOverallPayment = /*#__PURE__*/function () {
             BalanceAmount: adjustedTotalPaid,
             totalPaid: totalPaid
           });
-          _context17.next = 17;
+          _context15.next = 4;
           break;
-        case 13:
-          _context17.prev = 13;
-          _context17.t0 = _context17["catch"](0);
-          console.error("Error fetching overall payment:", _context17.t0.message);
+        case 3:
+          _context15.prev = 3;
+          _t15 = _context15["catch"](0);
+          console.error("Error fetching overall payment:", _t15.message);
           res.status(500).json({
             success: false,
             message: "Failed to fetch overall payment"
           });
-        case 17:
+        case 4:
         case "end":
-          return _context17.stop();
+          return _context15.stop();
       }
-    }, _callee17, null, [[0, 13]]);
+    }, _callee15, null, [[0, 3]]);
   }));
-  return function (_x33, _x34) {
-    return _ref17.apply(this, arguments);
+  return function (_x31, _x32) {
+    return _ref15.apply(this, arguments);
   };
 }();
 exports.getCounts = /*#__PURE__*/function () {
-  var _ref18 = (0, _asyncToGenerator2["default"])(/*#__PURE__*/_regenerator["default"].mark(function _callee18(req, res) {
-    var studentCount, formCount, approvedFormCount, forms, totalCollectedFees, totalCollected, totalFeeAmount, overallFeeAmount, totalPaid, expansives, totalExpansiveAmount, adjustedTotalPaid;
-    return _regenerator["default"].wrap(function _callee18$(_context18) {
-      while (1) switch (_context18.prev = _context18.next) {
+  var _ref16 = (0, _asyncToGenerator2["default"])(/*#__PURE__*/_regenerator["default"].mark(function _callee16(req, res) {
+    var studentCount, formCount, approvedFormCount, forms, totalCollectedFees, totalCollected, totalFeeAmount, overallFeeAmount, totalPaid, expansives, totalExpansiveAmount, adjustedTotalPaid, _t16;
+    return _regenerator["default"].wrap(function (_context16) {
+      while (1) switch (_context16.prev = _context16.next) {
         case 0:
-          _context18.prev = 0;
-          _context18.next = 3;
+          _context16.prev = 0;
+          _context16.next = 1;
           return Student.countDocuments();
-        case 3:
-          studentCount = _context18.sent;
-          _context18.next = 6;
+        case 1:
+          studentCount = _context16.sent;
+          _context16.next = 2;
           return Form.countDocuments();
-        case 6:
-          formCount = _context18.sent;
-          _context18.next = 9;
+        case 2:
+          formCount = _context16.sent;
+          _context16.next = 3;
           return Form.countDocuments({
             isApproved: true
           });
-        case 9:
-          approvedFormCount = _context18.sent;
-          _context18.next = 12;
+        case 3:
+          approvedFormCount = _context16.sent;
+          _context16.next = 4;
           return Form.find({});
-        case 12:
-          forms = _context18.sent;
-          _context18.next = 15;
+        case 4:
+          forms = _context16.sent;
+          _context16.next = 5;
           return Form.aggregate([{
             $group: {
               _id: null,
@@ -1020,11 +1073,11 @@ exports.getCounts = /*#__PURE__*/function () {
               } // Sum the paidFee field, defaulting to 0 if null
             }
           }]);
-        case 15:
-          totalCollectedFees = _context18.sent;
+        case 5:
+          totalCollectedFees = _context16.sent;
           totalCollected = totalCollectedFees.length > 0 ? totalCollectedFees[0].total : 0; // Get the total amount or default to 0
           // Calculate the overall fee amount of all forms
-          _context18.next = 19;
+          _context16.next = 6;
           return Form.aggregate([{
             $group: {
               _id: null,
@@ -1036,16 +1089,16 @@ exports.getCounts = /*#__PURE__*/function () {
               } // Sum the feeAmount field, defaulting to 0 if null
             }
           }]);
-        case 19:
-          totalFeeAmount = _context18.sent;
+        case 6:
+          totalFeeAmount = _context16.sent;
           overallFeeAmount = totalFeeAmount.length > 0 ? totalFeeAmount[0].total : 0; // Get the total fee amount or default to 0
           totalPaid = forms.reduce(function (acc, form) {
             return acc + (form.paidFee || 0);
           }, 0); // Fetch all expansive records and calculate total amount
-          _context18.next = 24;
+          _context16.next = 7;
           return expansive.find({});
-        case 24:
-          expansives = _context18.sent;
+        case 7:
+          expansives = _context16.sent;
           totalExpansiveAmount = expansives.reduce(function (acc, exp) {
             return acc + (exp.approvedAmount || 0);
           }, 0);
@@ -1065,58 +1118,58 @@ exports.getCounts = /*#__PURE__*/function () {
               // Include the overall fee amount of all forms
             }
           });
-          _context18.next = 34;
+          _context16.next = 9;
           break;
-        case 30:
-          _context18.prev = 30;
-          _context18.t0 = _context18["catch"](0);
-          console.error("Error getting counts:", _context18.t0.message);
+        case 8:
+          _context16.prev = 8;
+          _t16 = _context16["catch"](0);
+          console.error("Error getting counts:", _t16.message);
           res.status(500).json({
             success: false,
             message: "Failed to get counts"
           });
-        case 34:
+        case 9:
         case "end":
-          return _context18.stop();
+          return _context16.stop();
       }
-    }, _callee18, null, [[0, 30]]);
+    }, _callee16, null, [[0, 8]]);
   }));
-  return function (_x35, _x36) {
-    return _ref18.apply(this, arguments);
+  return function (_x33, _x34) {
+    return _ref16.apply(this, arguments);
   };
 }();
 exports.promoteForm = /*#__PURE__*/function () {
-  var _ref19 = (0, _asyncToGenerator2["default"])(/*#__PURE__*/_regenerator["default"].mark(function _callee19(req, res) {
-    var id, _req$body2, newClass, newFeeAmount, existingForm, newForm;
-    return _regenerator["default"].wrap(function _callee19$(_context19) {
-      while (1) switch (_context19.prev = _context19.next) {
+  var _ref17 = (0, _asyncToGenerator2["default"])(/*#__PURE__*/_regenerator["default"].mark(function _callee17(req, res) {
+    var id, _req$body2, newClass, newFeeAmount, existingForm, newForm, _t17;
+    return _regenerator["default"].wrap(function (_context17) {
+      while (1) switch (_context17.prev = _context17.next) {
         case 0:
-          _context19.prev = 0;
+          _context17.prev = 0;
           id = req.params.id; // Get the form ID from the request parameters
           _req$body2 = req.body, newClass = _req$body2.newClass, newFeeAmount = _req$body2.newFeeAmount; // Get the new class and fee amount from the request body
           // Validate the input
           if (!(!newClass || !newFeeAmount)) {
-            _context19.next = 5;
+            _context17.next = 1;
             break;
           }
-          return _context19.abrupt("return", res.status(400).json({
+          return _context17.abrupt("return", res.status(400).json({
             success: false,
             message: "New class and fee amount are required."
           }));
-        case 5:
-          _context19.next = 7;
+        case 1:
+          _context17.next = 2;
           return Form.findById(id);
-        case 7:
-          existingForm = _context19.sent;
+        case 2:
+          existingForm = _context17.sent;
           if (existingForm) {
-            _context19.next = 10;
+            _context17.next = 3;
             break;
           }
-          return _context19.abrupt("return", res.status(404).json({
+          return _context17.abrupt("return", res.status(404).json({
             success: false,
             message: "Form not found."
           }));
-        case 10:
+        case 3:
           // Create a new form with duplicated admissionFor and feeAmount
           newForm = new Form(_objectSpread(_objectSpread({}, existingForm.toObject()), {}, {
             // Copy existing form data
@@ -1134,31 +1187,31 @@ exports.promoteForm = /*#__PURE__*/function () {
             // Reset timestamps
             updatedAt: undefined
           })); // Save the new form
-          _context19.next = 13;
+          _context17.next = 4;
           return newForm.save();
-        case 13:
+        case 4:
           res.status(201).json({
             success: true,
             message: "Form promoted successfully.",
             data: newForm
           });
-          _context19.next = 20;
+          _context17.next = 6;
           break;
-        case 16:
-          _context19.prev = 16;
-          _context19.t0 = _context19["catch"](0);
-          console.error("Error promoting form:", _context19.t0.message);
+        case 5:
+          _context17.prev = 5;
+          _t17 = _context17["catch"](0);
+          console.error("Error promoting form:", _t17.message);
           res.status(500).json({
             success: false,
             message: "Failed to promote form."
           });
-        case 20:
+        case 6:
         case "end":
-          return _context19.stop();
+          return _context17.stop();
       }
-    }, _callee19, null, [[0, 16]]);
+    }, _callee17, null, [[0, 5]]);
   }));
-  return function (_x37, _x38) {
-    return _ref19.apply(this, arguments);
+  return function (_x35, _x36) {
+    return _ref17.apply(this, arguments);
   };
 }();
