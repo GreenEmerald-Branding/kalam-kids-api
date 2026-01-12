@@ -285,7 +285,6 @@ exports.payForm = async (req, res) => {
     bankTransferId,
     cashDenominations,
     receiverName,
-    remainingBalance // Add remainingBalance to the destructured request body
   } = req.body;
 
   try {
@@ -310,6 +309,8 @@ exports.payForm = async (req, res) => {
     }
 
     const newInvoiceNo = `CR-${String(lastNumber + 1).padStart(6, "0")}`;
+    
+    const newRemainingBalance = form.feeAmount - ((form.paidFee || 0) + amount);
 
     const newPayment = {
       _id: newInvoiceNo,
@@ -324,7 +325,7 @@ exports.payForm = async (req, res) => {
       cashDenominations,
       receiverName,
       date: formatDate(new Date()),
-      remainingBalance // Store remaining balance if needed
+      remainingBalance: newRemainingBalance
     };
 
     form.paidFee = (form.paidFee || 0) + amount;
@@ -354,7 +355,7 @@ exports.payForm = async (req, res) => {
         cashDenominations,
         receiverName,
         date: newPayment.date,
-        remainingBalance // Include remaining balance in the email data
+        remainingBalance: newRemainingBalance
       }
     };
 
