@@ -17,6 +17,7 @@ mongoose.connect(process.env.MONGO_URI).then(() => console.log("MongoDB connecte
 const formRoute = require("./routes/formRoute");
 const authRoute = require("./routes/authRoute");
 const expansiveRoute = require("./routes/expansiveRoute");
+const miscBillRoute = require("./routes/miscBillRoute");
 
 // const billRoute = require("./controllers/billCountroller");
 
@@ -25,6 +26,7 @@ app.use("/api/form", formRoute);
 
 app.use("/api/form", authRoute);
 app.use("/api/form", expansiveRoute);
+app.use("/api/form", miscBillRoute);
 
 // Server
 const PORT = process.env.PORT || 5000;
