@@ -17,8 +17,7 @@ const miscBillSchema = new mongoose.Schema({
   accountantName: { type: String, required: true }, // Added field
   status: {
     type: String,
-    enum: ['pending', 'paid'],
-    default: 'pending',
+    default: 'paid',
   },
   date: {
     type: Date,
@@ -34,6 +33,10 @@ const miscBillSchema = new mongoose.Schema({
     ref: 'Category', // Reference to the Category model
     required: true,
   },
+  payeeName: { type: String, required: true },
+  payeePhoneNumber: { type: String, required: true },
+  particulars: { type: String, required: true },
+  modeOfPayment: { type: String, required: true },
 });
 
 module.exports = mongoose.model("MiscBill", miscBillSchema);

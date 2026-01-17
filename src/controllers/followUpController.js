@@ -1,5 +1,5 @@
 const FollowUp = require('../module/followUpModel');
-const Student = require('../module/sutdent'); // Ensure the correct model name
+const Student = require('../module/student'); // Ensure the correct model name
 
 // Add a new follow-up
 exports.addFollowUp = async (req, res) => {

@@ -18,16 +18,26 @@ const formRoute = require("./routes/formRoute");
 const authRoute = require("./routes/authRoute");
 const expansiveRoute = require("./routes/expansiveRoute");
 const miscBillRoute = require("./routes/miscBillRoute");
+const categoryRoute = require("./routes/categoryRoute");
+const predefinedMiscItemRoute = require("./routes/predefinedMiscItemRoute");
+const billRoute = require("./routes/billRoute");
 
-// const billRoute = require("./controllers/billCountroller");
 
+app.use("/api/auth", authRoute);
 app.use("/api/form", formRoute);
-// app.use("/api/form", billRoute);
+app.use("/api/expansive", expansiveRoute);
+app.use("/api/misc-bills", miscBillRoute);
+app.use("/api/categories", categoryRoute);
+app.use("/api/predefined-misc-items", predefinedMiscItemRoute);
+app.use("/api/bills", billRoute);
 
-app.use("/api/form", authRoute);
-app.use("/api/form", expansiveRoute);
-app.use("/api/form", miscBillRoute);
 
 // Server
 const PORT = process.env.PORT || 5000;
+// Add a generic catch-all route for debugging (MUST be after all other routes)
+app.all('*', (req, res) => {
+    console.log(`[DEBUG] Unhandled request: ${req.method} ${req.originalUrl}`);
+    res.status(404).json({ message: 'Resource not found or handler missing' });
+});
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+

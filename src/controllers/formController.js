@@ -1,5 +1,5 @@
 const Form = require("../module/formModel");
-const Student = require("../module/sutdent"); // Corrected the typo
+const Student = require("../module/student"); // Corrected the typo
 // const { sendEmail } = require('../mailer'); 
 const { sendInquiryEmail, sendAdmissionApprovalEmail, sendInquiryEmailToFather, sendInquiryEmailToMother } = require('../mailer');
 const expansive = require("../module/expansive");

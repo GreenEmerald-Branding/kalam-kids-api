@@ -1,11 +1,12 @@
 const MiscBill = require('../module/miscBillModel');
-const Student = require('../module/sutdent'); // Assuming student model is in 'sutdent.js'
+const Student = require('../module/student'); 
 const Category = require('../module/Category'); // Import Category model
 
 // Create a new miscellaneous bill
 exports.createMiscBill = async (req, res) => {
+    console.log('Received request to create miscellaneous bill'); // Debug log
     try {
-        const { studentId, items, totalAmount, status, category, amountInWords, accountantName } = req.body; // Added amountInWords, accountantName
+        const { studentId, items, totalAmount, status, category, amountInWords, accountantName, payeeName, payeePhoneNumber, particulars, modeOfPayment } = req.body; // Added amountInWords, accountantName
 
         // Find the last bill to generate a new invoice number
         const lastBill = await MiscBill.findOne().sort({ invoiceNo: -1 });
@@ -24,6 +25,10 @@ exports.createMiscBill = async (req, res) => {
             status,
             invoiceNo: newInvoiceNo,
             category,
+            payeeName,
+            payeePhoneNumber,
+            particulars,
+            modeOfPayment,
         });
 
         await newBill.save();

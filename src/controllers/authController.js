@@ -46,3 +46,7 @@ exports.login = async (req, res) => {
       res.status(500).json({ success: false, message: 'Login failed' });
     }
   };
+
+exports.getDashboardData = (req, res) => {
+  res.status(501).json({ message: 'Not Implemented' });
+};

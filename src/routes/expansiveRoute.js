@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
  
-const { submitExpansive, getAllExpansive, updateExpansive, deleteExpansive, deleteCategory, updateCategory, addCategory, getCategories, approveExpansive } = require('../controllers/expansiveController');
+const { submitExpansive, getAllExpansive, updateExpansive, deleteExpansive, approveExpansive } = require('../controllers/expansiveController');
+const { deleteCategory, updateCategory, addCategory, getCategories } = require('../controllers/categoryController');
 
  
 router.post('/expansive', submitExpansive);
