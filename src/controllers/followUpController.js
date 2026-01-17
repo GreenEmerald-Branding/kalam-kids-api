@@ -32,7 +32,7 @@ exports.getFollowUpsByEnquiryId = async (req, res) => {
     const followUps = await FollowUp.find({ enquiryId });
 
     if (!followUps.length) {
-      return res.status(404).json({ success: false, message: "No follow-ups found for this enquiry." });
+      return res.status(200).json({ success: false, message: "No follow-ups found for this enquiry." });
     }
 
     // Map the follow-ups to include only the enquiryId and relevant details

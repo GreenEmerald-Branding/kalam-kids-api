@@ -10,6 +10,7 @@ const miscBillSchema = new mongoose.Schema({
     {
       description: { type: String, required: true },
       amount: { type: Number, required: true },
+      quantity: { type: Number, required: true, default: 1 },
     },
   ],
   totalAmount: { type: Number, required: true },
