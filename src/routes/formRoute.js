@@ -9,7 +9,7 @@ router.post("/submit", submitForm);
 router.put("/update/:id", updateForm);
 router.get("/form/:id", getFormById);
 router.get("/form", getAllForm);
-router.put("/form/approve/:id", approveForm);
+router.put("/approve/:id", approveForm);
 router.get("/approved", getApprovedForms); 
 router.delete('/forms/:id', deleteForm);  
 router.get('/counts', getCounts);
