@@ -21,6 +21,20 @@ const getAllExpansive = async (req, res) => {
     }
 };
 
+const getExpansiveById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const expansiveRecord = await expansive.findById(id);
+        if (!expansiveRecord) {
+            return res.status(404).json({ success: false, message: "Expansive not found" });
+        }
+        res.status(200).json({ success: true, data: expansiveRecord });
+    } catch (error) {
+        console.error("Error fetching expansive:", error.message);
+        res.status(500).json({ success: false, message: "Failed to fetch expansive", error: error.message });
+    }
+};
+
 const updateExpansive = async (req, res) => {
     try {
         const { id } = req.params; // Get the ID from the request parameters
@@ -101,6 +115,7 @@ const approveExpansive = async (req, res) => {
 module.exports = {
     submitExpansive,
     getAllExpansive,
+    getExpansiveById,
     updateExpansive,
     deleteExpansive,
     approveExpansive

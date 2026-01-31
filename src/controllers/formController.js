@@ -6,7 +6,7 @@ const expansive = require("../module/expansive");
  
   // Adjust the path as necessary
 // Adjust the path as necessary
-exports.submitForm = async (req, res) => {
+const submitForm = async (req, res) => {
   try {
     const formData = req.body; // Get the data from the request body
     console.log("Received form data:", formData); // Log the incoming data
@@ -34,7 +34,7 @@ exports.submitForm = async (req, res) => {
     res.status(500).json({ success: false, message: "Failed to save form", error: error.message });
   }
 }
-exports.updateForm = async (req, res) => {
+const updateForm = async (req, res) => {
   try {
     const { id } = req.params; // Get the form ID from the request parameters
     const updatedData = req.body; // Get the updated data from the request body
@@ -58,7 +58,7 @@ exports.updateForm = async (req, res) => {
   }
 };
 
-exports.getFormById = async (req, res) => {
+const getFormById = async (req, res) => {
   try {
     const { id } = req.params;
     const form = await Form.findById(id);
@@ -73,7 +73,7 @@ exports.getFormById = async (req, res) => {
     res.status(500).json({ success: false, message: "Failed to fetch form" });
   }
 };
-exports.getAllForm = async (req, res) => {
+const getAllForm = async (req, res) => {
   try {
     const  form = await Form.find();
     res.status(200).json({ success: true, data:  form });
@@ -82,7 +82,7 @@ exports.getAllForm = async (req, res) => {
     res.status(500).json({ success: false, message: "Failed to fetch students" });
   }
 };
-exports.deleteForm = async (req, res) => {
+const deleteForm = async (req, res) => {
   try {
     const { id } = req.params;
     const form = await Form.findByIdAndDelete(id);
@@ -98,7 +98,7 @@ exports.deleteForm = async (req, res) => {
   }
 };
 
-exports.submitStudent = async (req, res) => {
+const submitStudent = async (req, res) => {
   try {
     const studentData = req.body;
     console.log("Received student data:", studentData);
@@ -128,7 +128,7 @@ exports.submitStudent = async (req, res) => {
 };
 
 
-exports.getStudentById = async (req, res) => {
+const getStudentById = async (req, res) => {
   try {
     const { id } = req.params;
     const student = await Student.findById(id);
@@ -144,7 +144,7 @@ exports.getStudentById = async (req, res) => {
   }
 };
 
-exports.getAllStudents = async (req, res) => {
+const getAllStudents = async (req, res) => {
   try {
     const students = await Student.find();
     res.status(200).json({ success: true, data: students });
@@ -153,7 +153,7 @@ exports.getAllStudents = async (req, res) => {
     res.status(500).json({ success: false, message: "Failed to fetch students" });
   }
 };
-exports.deleteStudent = async (req, res) => {
+const deleteStudent = async (req, res) => {
   try {
     const { id } = req.params;
     const student = await Student.findByIdAndDelete(id);
@@ -168,7 +168,7 @@ exports.deleteStudent = async (req, res) => {
     res.status(500).json({ success: false, message: "Failed to delete student" });
   }
 };
-exports.approveForm = async (req, res) => {
+const approveForm = async (req, res) => {
   try {
     const { id } = req.params;
     const { feeAmount } = req.body;  
@@ -237,22 +237,7 @@ exports.approveForm = async (req, res) => {
 };
 
 
-exports.getFormById = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const form = await Form.findById(id);
-
-    if (!form) {
-      return res.status(404).json({ success: false, message: "Form not found" });
-    }
-
-    res.status(200).json({ success: true, data: form });
-  } catch (error) {
-    console.error("Error fetching form:", error.message);
-    res.status(500).json({ success: false, message: "Failed to fetch form" });
-  }
-};
-exports.getApprovedForms = async (req, res) => {
+const getApprovedForms = async (req, res) => {
   try {
     const approvedForms = await Form.find({ isApproved: true });
 
@@ -279,7 +264,7 @@ const formatDate = (date) => {
   const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
   return date.toLocaleDateString('en-CA', options).split('/').join('-'); // Format to YYYY-MM-DD
 };
-exports.payForm = async (req, res) => {
+const payForm = async (req, res) => {
   const { amount, paidBy, amountInWords, cashReceivedFrom, relationshipName, chequeDetails,
     qrTransactionId,
     bankTransferId,
@@ -383,7 +368,7 @@ exports.payForm = async (req, res) => {
 };
 
 
-exports.getPaymentsForForm = async (req, res) => {
+const getPaymentsForForm = async (req, res) => {
   try {
     const { id } = req.params;
     const form = await Form.findById(id);
@@ -413,9 +398,92 @@ exports.getPaymentsForForm = async (req, res) => {
 };
 
 
+const getPaymentById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const forms = await Form.find({ "feePayments._id": id }); // Find forms that contain this payment ID
 
+    if (forms.length === 0) {
+      return res.status(404).json({ success: false, message: "Payment not found" });
+    }
+
+              // Find the specific payment within the forms
+
+              let foundPayment = null;
+
+              let parentForm = null;
+
+    
+
+              for (const form of forms) {
+
+                const payment = form.feePayments.find(p => p._id.toString() === id);
+
+                if (payment) {
+
+                  foundPayment = payment;
+
+                  parentForm = form; // Keep track of the parent form
+
+                  break;
+
+                }
+
+              }
+
+    
+
+              if (!foundPayment) {
+
+                return res.status(404).json({ success: false, message: "Payment not found within forms" });
+
+              }
+
+    
+
+              console.log("Found Payment:", foundPayment); // Debug log
+
+              console.log("Parent Form:", parentForm); // Debug log
+
+    
+
+              // Combine payment details with relevant form details for a comprehensive response
+
+              const combinedPaymentData = {
+
+                ...foundPayment.toObject(),
+
+                fullName: parentForm.particularsOfChild?.fullName || "",
+
+                registerNo: parentForm.invoiceNo || "",
+
+                class: parentForm.admissionFor || "",
+
+                formId: parentForm._id,
+
+                feeAmount: parentForm.feeAmount,
+
+                totalPaidFeeForForm: parentForm.paidFee,
+
+                remaining: parentForm.feeAmount - parentForm.paidFee,
+
+                // You can add more form details here if needed
+
+              };
+
+              console.log("Combined Payment Data:", combinedPaymentData); // Debug log
+
+    
+
+              res.status(200).json({ success: true, data: combinedPaymentData });
+
+            } catch (error) {
+    console.error("Error fetching single payment by ID:", error.message);
+    res.status(500).json({ success: false, message: "Failed to fetch payment details" });
+  }
+};
  
-exports.getAllPayments = async (req, res) => {
+const getAllPayments = async (req, res) => {
   try {
     const forms = await Form.find({});
 
@@ -423,13 +491,14 @@ exports.getAllPayments = async (req, res) => {
       let totalPaidFee = 0; // Initialize total paid fee for each form
 
       return (form.feePayments || []).map(payment => {
+        console.log("Inspecting payment object:", payment); // Add this line
         totalPaidFee += payment.amount || 0; // Accumulate the total paid fee
 
         // Calculate remaining amount for this payment
         const remaining = form.feeAmount - totalPaidFee; // Remaining amount after this payment
 
         return {
-          paymentId: payment._id, 
+          _id: payment._id || 'missing_id_' + Math.random().toString(36).substr(2, 9), // Fallback for missing/invalid _id
           cashNo: payment.cashNo,             
           fullName: form.particularsOfChild?.fullName || "",
           fatherMobile: form.particularsOfParents?.FatherMobile || "",
@@ -465,7 +534,7 @@ exports.getAllPayments = async (req, res) => {
   }
 };
 
-exports.getPaymentHistory = async (req, res) => {
+const getPaymentHistory = async (req, res) => {
   try {
     const { id } = req.params;
     const form = await Form.findById(id);
@@ -497,7 +566,7 @@ exports.getPaymentHistory = async (req, res) => {
     res.status(500).json({ success: false, message: "Failed to fetch payment history" });
   }
 };
-exports.getOverallPayment = async (req, res) => {
+const getOverallPayment = async (req, res) => {
   try {
     // Fetch all forms and calculate total paid fees
     const forms = await Form.find({});
@@ -523,7 +592,7 @@ exports.getOverallPayment = async (req, res) => {
     res.status(500).json({ success: false, message: "Failed to fetch overall payment" });
   }
 };
-exports.getCounts = async (req, res) => {
+const getCounts = async (req, res) => {
   try {
     const studentCount = await Student.countDocuments();
     const formCount = await Form.countDocuments();
@@ -582,7 +651,7 @@ exports.getCounts = async (req, res) => {
     res.status(500).json({ success: false, message: "Failed to get counts" });
   }
 };
-exports.promoteForm = async (req, res) => {
+const promoteForm = async (req, res) => {
   try {
     const { id } = req.params; // Get the form ID from the request parameters
     const { newClass, newFeeAmount } = req.body; // Get the new class and fee amount from the request body
@@ -618,4 +687,26 @@ exports.promoteForm = async (req, res) => {
     console.error("Error promoting form:", error.message);
     res.status(500).json({ success: false, message: "Failed to promote form." });
   }
+};
+
+module.exports = {
+  submitForm,
+  updateForm,
+  getFormById,
+  getAllForm,
+  deleteForm,
+  submitStudent,
+  getStudentById,
+  getAllStudents,
+  deleteStudent,
+  approveForm,
+  getApprovedForms,
+  payForm,
+  getPaymentsForForm,
+  getPaymentById,
+  getAllPayments,
+  getPaymentHistory,
+  getOverallPayment,
+  getCounts,
+  promoteForm,
 };
