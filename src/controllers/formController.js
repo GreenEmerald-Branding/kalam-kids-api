@@ -639,24 +639,39 @@ const getCounts = async (req, res) => {
 
     const totalPaidWithMisc = totalCollected + miscBillTotal;
  
-    const adjustedTotalPaid = totalPaid - totalExpansiveAmount;
-    res.status(200).json({
-      success: true,
-      data: {
-        students: studentCount,
-        forms: formCount,
-        approvedForms: approvedFormCount,
-        totalCollectedFees: totalCollected, // Include the total collected fees in the response
-        overallFeeAmount,
-        BalanceAmount: adjustedTotalPaid, 
-        totalPaid: totalPaid,
-        totalExpansiveAmount,
-        miscBillTotal, // Include miscBillTotal
-        totalPaidWithMisc // Include totalPaidWithMisc
-      // Include the overall fee amount of all forms
-      }
-    });
-  } catch (error) {
+            const adjustedTotalPaid = totalPaid - totalExpansiveAmount;
+ 
+            res.status(200).json({
+ 
+              success: true,
+ 
+              data: {
+ 
+                students: studentCount,
+ 
+                forms: formCount,
+ 
+                approvedForms: approvedFormCount,
+ 
+                totalCollectedFees: totalCollected, // Include the total collected fees in the response
+ 
+                overallFeeAmount,
+ 
+                BalanceAmount: adjustedTotalPaid,
+ 
+                totalPaid: totalPaid,
+ 
+                totalExpansiveAmount,
+ 
+                miscBillTotal, // Include miscBillTotal
+ 
+                totalPaidWithMisc // Include totalPaidWithMisc
+ 
+              // Include the overall fee amount of all forms
+ 
+              }
+ 
+            });  } catch (error) {
     console.error("Error getting counts:", error.message);
     res.status(500).json({ success: false, message: "Failed to get counts" });
   }
