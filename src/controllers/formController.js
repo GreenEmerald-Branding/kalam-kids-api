@@ -3,6 +3,7 @@ const Student = require("../module/student"); // Corrected the typo
 // const { sendEmail } = require('../mailer'); 
 const { sendInquiryEmail, sendAdmissionApprovalEmail, sendInquiryEmailToFather, sendInquiryEmailToMother } = require('../mailer');
 const expansive = require("../module/expansive");
+const MiscBill = require("../module/miscBillModel");
  
   // Adjust the path as necessary
 // Adjust the path as necessary
@@ -630,6 +631,13 @@ const getCounts = async (req, res) => {
     const totalExpansiveAmount = expansives.reduce((acc, exp) => {
       return acc + (exp.approvedAmount || 0);
     }, 0);
+
+    const miscBills = await MiscBill.find({});
+    const miscBillTotal = miscBills.reduce((acc, bill) => {
+      return acc + (bill.totalAmount || 0);
+    }, 0);
+
+    const totalPaidWithMisc = totalCollected + miscBillTotal;
  
     const adjustedTotalPaid = totalPaid - totalExpansiveAmount;
     res.status(200).json({
@@ -642,7 +650,9 @@ const getCounts = async (req, res) => {
         overallFeeAmount,
         BalanceAmount: adjustedTotalPaid, 
         totalPaid: totalPaid,
-        totalExpansiveAmount
+        totalExpansiveAmount,
+        miscBillTotal, // Include miscBillTotal
+        totalPaidWithMisc // Include totalPaidWithMisc
       // Include the overall fee amount of all forms
       }
     });
